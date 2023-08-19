@@ -5,19 +5,18 @@ import onnxruntime
 
 
 class EfficientNet(object):
-
     def __init__(
         self,
         model_path,
-        type='B0',
+        type="B0",
         providers=[
             # ('TensorrtExecutionProvider', {
             #     'trt_engine_cache_enable': True,
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
         # モデル読み込み
@@ -31,21 +30,21 @@ class EfficientNet(object):
         self.output_name = self.onnx_session.get_outputs()[0].name
 
         # 各種設定
-        if type == 'B0':
+        if type == "B0":
             self.input_shape = (224, 224)
-        elif type == 'B1':
+        elif type == "B1":
             self.input_shape = (240, 240)
-        elif type == 'B2':
+        elif type == "B2":
             self.input_shape = (260, 260)
-        elif type == 'B3':
+        elif type == "B3":
             self.input_shape = (300, 300)
-        elif type == 'B4':
+        elif type == "B4":
             self.input_shape = (380, 380)
-        elif type == 'B5':
+        elif type == "B5":
             self.input_shape = (456, 456)
-        elif type == 'B6':
+        elif type == "B6":
             self.input_shape = (528, 528)
-        elif type == 'B7':
+        elif type == "B7":
             self.input_shape = (600, 600)
 
     def __call__(self, image, top_k=5):
@@ -55,7 +54,7 @@ class EfficientNet(object):
             dsize=(self.input_shape[1], self.input_shape[0]),
         )
         input_image = cv.cvtColor(input_image, cv.COLOR_BGR2RGB)
-        input_image = np.expand_dims(input_image, axis=0).astype('float32')
+        input_image = np.expand_dims(input_image, axis=0).astype("float32")
 
         # Inference
         input_name = self.onnx_session.get_inputs()[0].name
@@ -82,11 +81,11 @@ class EfficientNetB0(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
-        self._model = EfficientNet(model_path, 'B0', providers)
+        self._model = EfficientNet(model_path, "B0", providers)
 
     def __call__(self, image, top_k=5):
         return self._model(image, top_k)
@@ -104,11 +103,11 @@ class EfficientNetB1(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
-        self._model = EfficientNet(model_path, 'B1', providers)
+        self._model = EfficientNet(model_path, "B1", providers)
 
     def __call__(self, image, top_k=5):
         return self._model(image, top_k)
@@ -126,11 +125,11 @@ class EfficientNetB2(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
-        self._model = EfficientNet(model_path, 'B2', providers)
+        self._model = EfficientNet(model_path, "B2", providers)
 
     def __call__(self, image, top_k=5):
         return self._model(image, top_k)
@@ -148,11 +147,11 @@ class EfficientNetB3(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
-        self._model = EfficientNet(model_path, 'B3', providers)
+        self._model = EfficientNet(model_path, "B3", providers)
 
     def __call__(self, image, top_k=5):
         return self._model(image, top_k)
@@ -170,11 +169,11 @@ class EfficientNetB4(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
-        self._model = EfficientNet(model_path, 'B4', providers)
+        self._model = EfficientNet(model_path, "B4", providers)
 
     def __call__(self, image, top_k=5):
         return self._model(image, top_k)
@@ -192,11 +191,11 @@ class EfficientNetB5(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
-        self._model = EfficientNet(model_path, 'B5', providers)
+        self._model = EfficientNet(model_path, "B5", providers)
 
     def __call__(self, image, top_k=5):
         return self._model(image, top_k)
@@ -214,11 +213,11 @@ class EfficientNetB6(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
-        self._model = EfficientNet(model_path, 'B6', providers)
+        self._model = EfficientNet(model_path, "B6", providers)
 
     def __call__(self, image, top_k=5):
         return self._model(image, top_k)
@@ -236,21 +235,21 @@ class EfficientNetB7(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
-        self._model = EfficientNet(model_path, 'B7', providers)
+        self._model = EfficientNet(model_path, "B7", providers)
 
     def __call__(self, image, top_k=5):
         return self._model(image, top_k)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cap = cv.VideoCapture(0)
 
     # Load model
-    model_path = 'model/EfficientNetB0.onnx'
+    model_path = "model/EfficientNetB0.onnx"
     model = EfficientNetB0(model_path)
 
     while True:
@@ -267,7 +266,7 @@ if __name__ == '__main__':
         key = cv.waitKey(1)
         if key == 27:  # ESC
             break
-        cv.imshow('EfficientNet Input', frame)
+        cv.imshow("EfficientNet Input", frame)
 
     cap.release()
     cv.destroyAllWindows()

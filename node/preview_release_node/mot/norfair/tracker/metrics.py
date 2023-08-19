@@ -17,7 +17,6 @@ except ImportError:
 from collections import OrderedDict
 
 
-
 class InformationFile:
     def __init__(self, file_path):
         self.path = file_path
@@ -46,7 +45,6 @@ class PredictionsTextFile:
     """
 
     def __init__(self, input_path, save_path=".", information_file=None):
-
         file_name = os.path.split(input_path)[1]
 
         if information_file is None:
@@ -111,7 +109,9 @@ class DetectionFileParser:
         # frame, id, bb_left, bb_top, bb_right, bb_down, conf, x, y, z
         detections_path = os.path.join(input_path, "det/det.txt")
 
-        self.matrix_detections = np.loadtxt(detections_path, dtype="f", delimiter=",")
+        self.matrix_detections = np.loadtxt(
+            detections_path, dtype="f", delimiter=","
+        )
         row_order = np.argsort(self.matrix_detections[:, 0])
         self.matrix_detections = self.matrix_detections[row_order]
         # Coordinates refer to box corners
@@ -132,7 +132,7 @@ class DetectionFileParser:
             self.sorted_by_frame.append(self.get_dets_from_frame(frame_number))
 
     def get_dets_from_frame(self, frame_number):
-        """ this function returns a list of norfair Detections class, corresponding to frame=frame_number """
+        """this function returns a list of norfair Detections class, corresponding to frame=frame_number"""
 
         indexes = np.argwhere(self.matrix_detections[:, 0] == frame_number)
         detections = []
@@ -206,7 +206,9 @@ class Accumulators:
             if np.shape(self.matrix_predictions)[0] == 0:
                 self.matrix_predictions = new_row
             else:
-                self.matrix_predictions = np.vstack((self.matrix_predictions, new_row))
+                self.matrix_predictions = np.vstack(
+                    (self.matrix_predictions, new_row)
+                )
         self.frame_number += 1
         # Advance in progress bar
         try:
@@ -303,20 +305,26 @@ def compare_dataframes(gts, ts):
         print("Comparing ", k, "...")
         if k in gts:
             accs.append(
-                mm.utils.compare_to_groundtruth(gts[k], tsacc, "iou", distth=0.5)
+                mm.utils.compare_to_groundtruth(
+                    gts[k], tsacc, "iou", distth=0.5
+                )
             )
             names.append(k)
 
     return accs, names
 
 
-def eval_motChallenge(matrixes_predictions, paths, metrics=None, generate_overall=True):
+def eval_motChallenge(
+    matrixes_predictions, paths, metrics=None, generate_overall=True
+):
     gt = OrderedDict(
         [
             (
                 os.path.split(p)[1],
                 mm.io.loadtxt(
-                    os.path.join(p, "gt/gt.txt"), fmt="mot15-2D", min_confidence=1
+                    os.path.join(p, "gt/gt.txt"),
+                    fmt="mot15-2D",
+                    min_confidence=1,
                 ),
             )
             for p in paths
@@ -325,7 +333,10 @@ def eval_motChallenge(matrixes_predictions, paths, metrics=None, generate_overal
 
     ts = OrderedDict(
         [
-            (os.path.split(paths[n])[1], load_motchallenge(matrixes_predictions[n]))
+            (
+                os.path.split(paths[n])[1],
+                load_motchallenge(matrixes_predictions[n]),
+            )
             for n in range(len(paths))
         ]
     )
@@ -342,6 +353,8 @@ def eval_motChallenge(matrixes_predictions, paths, metrics=None, generate_overal
         accs, names=names, metrics=metrics, generate_overall=generate_overall
     )
     summary_text = mm.io.render_summary(
-        summary_dataframe, formatters=mh.formatters, namemap=mm.io.motchallenge_metric_names
+        summary_dataframe,
+        formatters=mh.formatters,
+        namemap=mm.io.motchallenge_metric_names,
     )
     return summary_text, summary_dataframe

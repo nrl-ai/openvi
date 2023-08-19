@@ -12,17 +12,22 @@ from node.node_abc import DpgNodeABC
 from node_editor.util import convert_cv_to_dpg
 
 
-def image_process(image, x0y0, x1y0, x2y0, x0y1, x1y1, x2y1, x0y2, x1y2, x2y2, k):
-    kernel = np.array([[x0y0, x1y0, x2y0],[x0y1, x1y1, x2y1],[x0y2, x1y2, x2y2]])*k
+def image_process(
+    image, x0y0, x1y0, x2y0, x0y1, x1y1, x2y1, x0y2, x1y2, x2y2, k
+):
+    kernel = (
+        np.array([[x0y0, x1y0, x2y0], [x0y1, x1y1, x2y1], [x0y2, x1y2, x2y2]])
+        * k
+    )
     image = cv2.filter2D(image, -1, kernel)
     return image
 
 
 class Node(DpgNodeABC):
-    _ver = '0.0.1'
+    _ver = "0.0.1"
 
-    node_label = 'Simple Filter'
-    node_tag = 'SimpleFilter'
+    node_label = "Simple Filter"
+    node_tag = "SimpleFilter"
 
     _min_val = -1.0
     _max_val = 1.0
@@ -43,39 +48,91 @@ class Node(DpgNodeABC):
         callback=None,
     ):
         # タグ名
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input01_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Input01'
-        tag_node_input01_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Input01Value'
-        tag_node_input02_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input02'
-        tag_node_input02_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input02Value'
-        tag_node_input03_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input03'
-        tag_node_input03_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input03Value'
-        tag_node_input04_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input04'
-        tag_node_input04_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input04Value'
-        tag_node_input05_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input05'
-        tag_node_input05_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input05Value'
-        tag_node_input06_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input06'
-        tag_node_input06_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input06Value'
-        tag_node_input07_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input07'
-        tag_node_input07_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input07Value'
-        tag_node_input08_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input08'
-        tag_node_input08_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input08Value'
-        tag_node_input09_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input09'
-        tag_node_input09_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input09Value'
-        tag_node_input10_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input10'
-        tag_node_input10_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input10Value'
-        tag_node_input11_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input11'
-        tag_node_input11_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input11Value'
-        tag_node_output01_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01'
-        tag_node_output01_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
-        tag_node_output02_name = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02'
-        tag_node_output02_value_name = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input01_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Input01"
+        )
+        tag_node_input01_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Input01Value"
+        )
+        tag_node_input02_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input02"
+        )
+        tag_node_input02_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input02Value"
+        )
+        tag_node_input03_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input03"
+        )
+        tag_node_input03_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input03Value"
+        )
+        tag_node_input04_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input04"
+        )
+        tag_node_input04_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input04Value"
+        )
+        tag_node_input05_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input05"
+        )
+        tag_node_input05_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input05Value"
+        )
+        tag_node_input06_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input06"
+        )
+        tag_node_input06_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input06Value"
+        )
+        tag_node_input07_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input07"
+        )
+        tag_node_input07_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input07Value"
+        )
+        tag_node_input08_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input08"
+        )
+        tag_node_input08_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input08Value"
+        )
+        tag_node_input09_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input09"
+        )
+        tag_node_input09_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input09Value"
+        )
+        tag_node_input10_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input10"
+        )
+        tag_node_input10_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input10Value"
+        )
+        tag_node_input11_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input11"
+        )
+        tag_node_input11_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input11Value"
+        )
+        tag_node_output01_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01"
+        )
+        tag_node_output01_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
+        tag_node_output02_name = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02"
+        )
+        tag_node_output02_value_name = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02Value"
+        )
 
         # OpenCV向け設定
         self._opencv_setting_dict = opencv_setting_dict
-        small_window_w = self._opencv_setting_dict['process_width']
-        small_window_h = self._opencv_setting_dict['process_height']
-        use_pref_counter = self._opencv_setting_dict['use_pref_counter']
+        small_window_w = self._opencv_setting_dict["process_width"]
+        small_window_h = self._opencv_setting_dict["process_height"]
+        use_pref_counter = self._opencv_setting_dict["use_pref_counter"]
 
         # 初期化用黒画像
         black_image = np.zeros((small_window_w, small_window_h, 3))
@@ -97,30 +154,30 @@ class Node(DpgNodeABC):
 
         # ノード
         with dpg.node(
-                tag=tag_node_name,
-                parent=parent,
-                label=self.node_label,
-                pos=pos,
+            tag=tag_node_name,
+            parent=parent,
+            label=self.node_label,
+            pos=pos,
         ):
             # 入力端子
             with dpg.node_attribute(
-                    tag=tag_node_input01_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input01_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_text(
                     tag=tag_node_input01_value_name,
-                    default_value='Input BGR image',
+                    default_value="Input BGR image",
                 )
             # 画像
             with dpg.node_attribute(
-                    tag=tag_node_output01_name,
-                    attribute_type=dpg.mvNode_Attr_Output,
+                tag=tag_node_output01_name,
+                attribute_type=dpg.mvNode_Attr_Output,
             ):
                 dpg.add_image(tag_node_output01_value_name)
             # 領域指定
             with dpg.node_attribute(
-                    tag=tag_node_input02_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input02_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input02_value_name,
@@ -132,8 +189,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input03_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input03_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input03_value_name,
@@ -145,8 +202,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input04_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input04_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input04_value_name,
@@ -158,8 +215,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input05_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input05_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input05_value_name,
@@ -171,8 +228,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input06_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input06_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input06_value_name,
@@ -184,8 +241,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input07_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input07_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input07_value_name,
@@ -197,8 +254,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input08_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input08_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input08_value_name,
@@ -210,8 +267,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input09_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input09_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input09_value_name,
@@ -223,8 +280,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input10_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input10_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input10_value_name,
@@ -236,8 +293,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input11_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input11_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input11_value_name,
@@ -251,12 +308,12 @@ class Node(DpgNodeABC):
             # 処理時間
             if use_pref_counter:
                 with dpg.node_attribute(
-                        tag=tag_node_output02_name,
-                        attribute_type=dpg.mvNode_Attr_Output,
+                    tag=tag_node_output02_name,
+                    attribute_type=dpg.mvNode_Attr_Output,
                 ):
                     dpg.add_text(
                         tag=tag_node_output02_value_name,
-                        default_value='elapsed time(ms)',
+                        default_value="elapsed time(ms)",
                     )
 
         return tag_node_name
@@ -268,36 +325,60 @@ class Node(DpgNodeABC):
         node_image_dict,
         node_result_dict,
     ):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        input_value02_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input02Value'
-        input_value03_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input03Value'
-        input_value04_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input04Value'
-        input_value05_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input05Value'
-        input_value06_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input06Value'
-        input_value07_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input07Value'
-        input_value08_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input08Value'
-        input_value09_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input09Value'
-        input_value10_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input10Value'
-        input_value11_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input11Value'
-        output_value01_tag = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
-        output_value02_tag = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        input_value02_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input02Value"
+        )
+        input_value03_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input03Value"
+        )
+        input_value04_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input04Value"
+        )
+        input_value05_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input05Value"
+        )
+        input_value06_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input06Value"
+        )
+        input_value07_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input07Value"
+        )
+        input_value08_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input08Value"
+        )
+        input_value09_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input09Value"
+        )
+        input_value10_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input10Value"
+        )
+        input_value11_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input11Value"
+        )
+        output_value01_tag = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
+        output_value02_tag = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02Value"
+        )
 
-        small_window_w = self._opencv_setting_dict['process_width']
-        small_window_h = self._opencv_setting_dict['process_height']
-        use_pref_counter = self._opencv_setting_dict['use_pref_counter']
+        small_window_w = self._opencv_setting_dict["process_width"]
+        small_window_h = self._opencv_setting_dict["process_height"]
+        use_pref_counter = self._opencv_setting_dict["use_pref_counter"]
 
         # 接続情報確認
-        connection_info_src = ''
+        connection_info_src = ""
         for connection_info in connection_list:
-            connection_type = connection_info[0].split(':')[2]
-            connection_tag = connection_info[1].split(':')[3]
+            connection_type = connection_info[0].split(":")[2]
+            connection_tag = connection_info[1].split(":")[3]
             if connection_type == self.TYPE_FLOAT:
                 # 接続タグ取得
-                source_tag = connection_info[0] + 'Value'
-                destination_tag = connection_info[1] + 'Value'
+                source_tag = connection_info[0] + "Value"
+                destination_tag = connection_info[1] + "Value"
                 # 値更新
                 input_value = round(float(dpg_get_value(source_tag)), 3)
-                if connection_tag == 'Input11':
+                if connection_tag == "Input11":
                     input_value = max([self._min_k, input_value])
                     input_value = min([self._max_k, input_value])
                 else:
@@ -307,8 +388,8 @@ class Node(DpgNodeABC):
             if connection_type == self.TYPE_IMAGE:
                 # 画像取得元のノード名(ID付き)を取得
                 connection_info_src = connection_info[0]
-                connection_info_src = connection_info_src.split(':')[:2]
-                connection_info_src = ':'.join(connection_info_src)
+                connection_info_src = connection_info_src.split(":")[:2]
+                connection_info_src = ":".join(connection_info_src)
 
         # 画像取得
         frame = node_image_dict.get(connection_info_src, None)
@@ -330,14 +411,17 @@ class Node(DpgNodeABC):
             start_time = time.perf_counter()
 
         if frame is not None:
-            frame = image_process(frame, x0y0, x1y0, x2y0, x0y1, x1y1, x2y1, x0y2, x1y2, x2y2, k)
+            frame = image_process(
+                frame, x0y0, x1y0, x2y0, x0y1, x1y1, x2y1, x0y2, x1y2, x2y2, k
+            )
 
         # 計測終了
         if frame is not None and use_pref_counter:
             elapsed_time = time.perf_counter() - start_time
             elapsed_time = int(elapsed_time * 1000)
-            dpg_set_value(output_value02_tag,
-                          str(elapsed_time).zfill(4) + 'ms')
+            dpg_set_value(
+                output_value02_tag, str(elapsed_time).zfill(4) + "ms"
+            )
 
         # 描画
         if frame is not None:
@@ -354,11 +438,19 @@ class Node(DpgNodeABC):
         pass
 
     def get_setting_dict(self, node_id):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        input_value02_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input02Value'
-        input_value03_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input03Value'
-        input_value04_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input04Value'
-        input_value05_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input05Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        input_value02_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input02Value"
+        )
+        input_value03_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input03Value"
+        )
+        input_value04_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input04Value"
+        )
+        input_value05_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input05Value"
+        )
 
         # 領域指定
         min_x = float(dpg_get_value(input_value02_tag))
@@ -369,8 +461,8 @@ class Node(DpgNodeABC):
         pos = dpg.get_item_pos(tag_node_name)
 
         setting_dict = {}
-        setting_dict['ver'] = self._ver
-        setting_dict['pos'] = pos
+        setting_dict["ver"] = self._ver
+        setting_dict["pos"] = pos
         setting_dict[input_value02_tag] = min_x
         setting_dict[input_value03_tag] = max_x
         setting_dict[input_value04_tag] = min_y
@@ -379,11 +471,19 @@ class Node(DpgNodeABC):
         return setting_dict
 
     def set_setting_dict(self, node_id, setting_dict):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        input_value02_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input02Value'
-        input_value03_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input03Value'
-        input_value04_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input04Value'
-        input_value05_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input05Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        input_value02_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input02Value"
+        )
+        input_value03_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input03Value"
+        )
+        input_value04_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input04Value"
+        )
+        input_value05_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input05Value"
+        )
 
         min_x = float(setting_dict[input_value02_tag])
         max_x = float(setting_dict[input_value03_tag])

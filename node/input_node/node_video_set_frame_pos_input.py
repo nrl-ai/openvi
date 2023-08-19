@@ -14,10 +14,10 @@ from node_editor.util import convert_cv_to_dpg
 
 
 class Node(DpgNodeABC):
-    _ver = '0.0.1'
+    _ver = "0.0.1"
 
-    node_label = 'Video(Set Frame Position)'
-    node_tag = 'VideoSetFramePos'
+    node_label = "Video(Set Frame Position)"
+    node_tag = "VideoSetFramePos"
 
     _opencv_setting_dict = None
 
@@ -44,24 +44,42 @@ class Node(DpgNodeABC):
         callback=None,
     ):
         # タグ名
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input01_name = tag_node_name + ':' + self.TYPE_INT + ':Input01'
-        tag_node_input02_name = tag_node_name + ':' + self.TYPE_INT + ':Input02'
-        tag_node_input02_value_name = tag_node_name + ':' + self.TYPE_INT + ':Input02Value'
-        tag_node_output01_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01'
-        tag_node_output01_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
-        tag_node_output02_name = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02'
-        tag_node_output02_value_name = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02Value'
-        tag_node_output03_name = tag_node_name + ':' + self.TYPE_INT + ':Output03'
-        tag_node_output03_value_name = tag_node_name + ':' + self.TYPE_INT + ':Output03Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input01_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input01"
+        )
+        tag_node_input02_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input02"
+        )
+        tag_node_input02_value_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input02Value"
+        )
+        tag_node_output01_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01"
+        )
+        tag_node_output01_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
+        tag_node_output02_name = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02"
+        )
+        tag_node_output02_value_name = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02Value"
+        )
+        tag_node_output03_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Output03"
+        )
+        tag_node_output03_value_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Output03Value"
+        )
 
         # OpenCV向け設定
         self._opencv_setting_dict = opencv_setting_dict
-        small_window_w = self._opencv_setting_dict['input_window_width']
+        small_window_w = self._opencv_setting_dict["input_window_width"]
         small_window_w = int(small_window_w * self._window_resize_rate)
-        small_window_h = self._opencv_setting_dict['input_window_height']
+        small_window_h = self._opencv_setting_dict["input_window_height"]
         small_window_h = int(small_window_h * self._window_resize_rate)
-        use_pref_counter = self._opencv_setting_dict['use_pref_counter']
+        use_pref_counter = self._opencv_setting_dict["use_pref_counter"]
 
         # 初期化用黒画像
         black_image = np.zeros((small_window_w, small_window_h, 3))
@@ -82,74 +100,75 @@ class Node(DpgNodeABC):
             )
 
         with dpg.file_dialog(
-                directory_selector=False,
-                show=False,
-                modal=True,
-                width=int(small_window_w * 3 / self._window_resize_rate),
-                height=int(small_window_h * 3 / self._window_resize_rate),
-                callback=self._callback_file_select,
-                id='movie_select:' + str(node_id),
+            directory_selector=False,
+            show=False,
+            modal=True,
+            width=int(small_window_w * 3 / self._window_resize_rate),
+            height=int(small_window_h * 3 / self._window_resize_rate),
+            callback=self._callback_file_select,
+            id="movie_select:" + str(node_id),
         ):
-            dpg.add_file_extension('Movie (*.mp4 *.avi){.mp4,.avi}')
-            dpg.add_file_extension('', color=(150, 255, 150, 255))
+            dpg.add_file_extension("Movie (*.mp4 *.avi){.mp4,.avi}")
+            dpg.add_file_extension("", color=(150, 255, 150, 255))
 
         # ノード
         with dpg.node(
-                tag=tag_node_name,
-                parent=parent,
-                label=self.node_label,
-                pos=pos,
+            tag=tag_node_name,
+            parent=parent,
+            label=self.node_label,
+            pos=pos,
         ):
             # ファイル選択
             with dpg.node_attribute(
-                    tag=tag_node_input01_name,
-                    attribute_type=dpg.mvNode_Attr_Static,
+                tag=tag_node_input01_name,
+                attribute_type=dpg.mvNode_Attr_Static,
             ):
                 dpg.add_button(
-                    label='Select Movie',
+                    label="Select Movie",
                     width=small_window_w,
                     callback=lambda: dpg.show_item(
-                        'movie_select:' + str(node_id), ),
+                        "movie_select:" + str(node_id),
+                    ),
                 )
             # カメラ画像
             with dpg.node_attribute(
-                    tag=tag_node_output01_name,
-                    attribute_type=dpg.mvNode_Attr_Output,
+                tag=tag_node_output01_name,
+                attribute_type=dpg.mvNode_Attr_Output,
             ):
                 dpg.add_image(tag_node_output01_value_name)
             # シーク
             with dpg.node_attribute(
-                    tag=tag_node_input02_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input02_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_int(
                     tag=tag_node_input02_value_name,
-                    label='',
+                    label="",
                     width=small_window_w,
                     default_value=1,
                     min_value=self._min_val,
                     max_value=self._max_val,
-                    format='',
+                    format="",
                     callback=None,
                 )
             # フレーム位置
             with dpg.node_attribute(
-                    tag=tag_node_output03_name,
-                    attribute_type=dpg.mvNode_Attr_Output,
+                tag=tag_node_output03_name,
+                attribute_type=dpg.mvNode_Attr_Output,
             ):
                 dpg.add_text(
-                    '0',
+                    "0",
                     tag=tag_node_output03_value_name,
                 )
             # 処理時間
             if use_pref_counter:
                 with dpg.node_attribute(
-                        tag=tag_node_output02_name,
-                        attribute_type=dpg.mvNode_Attr_Output,
+                    tag=tag_node_output02_name,
+                    attribute_type=dpg.mvNode_Attr_Output,
                 ):
                     dpg.add_text(
                         tag=tag_node_output02_value_name,
-                        default_value='elapsed time(ms)',
+                        default_value="elapsed time(ms)",
                     )
 
         return tag_node_name
@@ -161,25 +180,33 @@ class Node(DpgNodeABC):
         node_image_dict,
         node_result_dict,
     ):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input02_value_name = tag_node_name + ':' + self.TYPE_INT + ':Input02Value'
-        output_value01_tag = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
-        output_value02_tag = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02Value'
-        output_value03_tag = tag_node_name + ':' + self.TYPE_INT + ':Output03Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input02_value_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input02Value"
+        )
+        output_value01_tag = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
+        output_value02_tag = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02Value"
+        )
+        output_value03_tag = (
+            tag_node_name + ":" + self.TYPE_INT + ":Output03Value"
+        )
 
-        small_window_w = self._opencv_setting_dict['input_window_width']
+        small_window_w = self._opencv_setting_dict["input_window_width"]
         small_window_w = int(small_window_w * self._window_resize_rate)
-        small_window_h = self._opencv_setting_dict['input_window_height']
+        small_window_h = self._opencv_setting_dict["input_window_height"]
         small_window_h = int(small_window_h * self._window_resize_rate)
-        use_pref_counter = self._opencv_setting_dict['use_pref_counter']
+        use_pref_counter = self._opencv_setting_dict["use_pref_counter"]
 
         # 接続情報確認
         seek_input_value = None
         for connection_info in connection_list:
-            connection_type = connection_info[0].split(':')[2]
+            connection_type = connection_info[0].split(":")[2]
             if connection_type == self.TYPE_INT:
                 # 接続タグ取得
-                source_tag = connection_info[0] + 'Value'
+                source_tag = connection_info[0] + "Value"
                 # 値取得
                 seek_input_value = int(dpg_get_value(source_tag))
                 seek_input_value = max([self._min_val, seek_input_value])
@@ -258,8 +285,9 @@ class Node(DpgNodeABC):
         if video_capture is not None and use_pref_counter:
             elapsed_time = time.perf_counter() - start_time
             elapsed_time = int(elapsed_time * 1000)
-            dpg_set_value(output_value02_tag,
-                          str(elapsed_time).zfill(4) + 'ms')
+            dpg_set_value(
+                output_value02_tag, str(elapsed_time).zfill(4) + "ms"
+            )
 
         # 描画
         if frame is not None:
@@ -276,29 +304,33 @@ class Node(DpgNodeABC):
         pass
 
     def get_setting_dict(self, node_id):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input02_value_name = tag_node_name + ':' + self.TYPE_INT + ':Input02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input02_value_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input02Value"
+        )
 
         pos = dpg.get_item_pos(tag_node_name)
 
         seek_value = int(dpg_get_value(tag_node_input02_value_name))
 
         setting_dict = {}
-        setting_dict['ver'] = self._ver
-        setting_dict['pos'] = pos
+        setting_dict["ver"] = self._ver
+        setting_dict["pos"] = pos
         setting_dict[tag_node_input02_value_name] = seek_value
 
         return setting_dict
 
     def set_setting_dict(self, node_id, setting_dict):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input02_value_name = tag_node_name + ':' + self.TYPE_INT + ':Input02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input02_value_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input02Value"
+        )
 
         seek_value = setting_dict[tag_node_input02_value_name]
 
         dpg_set_value(tag_node_input02_value_name, seek_value)
 
     def _callback_file_select(self, sender, data):
-        if data['file_name'] != '.':
-            node_id = sender.split(':')[1]
-            self._movie_filepath[node_id] = data['file_path_name']
+        if data["file_name"] != ".":
+            node_id = sender.split(":")[1]
+            self._movie_filepath[node_id] = data["file_path_name"]

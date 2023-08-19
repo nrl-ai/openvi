@@ -11,16 +11,18 @@ def _random_color():
     return color_rgb
 
 
-class Actor():
-    """ Actor is a box moving in 2d space """
-    def __init__(self,
-                 color=None,
-                 max_omega: float = 0.05,
-                 miss_prob: float = 0.1,
-                 disappear_prob: float = 0.01,
-                 det_err_sigma: float = 1.0,
-                 canvas_size: int = 400):
+class Actor:
+    """Actor is a box moving in 2d space"""
 
+    def __init__(
+        self,
+        color=None,
+        max_omega: float = 0.05,
+        miss_prob: float = 0.1,
+        disappear_prob: float = 0.01,
+        det_err_sigma: float = 1.0,
+        canvas_size: int = 400,
+    ):
         self.max_omega = max_omega
         self.miss_prob = miss_prob
         self.disappear_prob = disappear_prob
@@ -51,7 +53,7 @@ class Actor():
         return (x, y)
 
     def detections(self, step: int):
-        """ returns ground truth and potentially missing detection for a given actor """
+        """returns ground truth and potentially missing detection for a given actor"""
         xmin, ymin = self.position_at(step)
         box_gt = [xmin, ymin, xmin + self.width, ymin + self.height]
 
@@ -71,34 +73,38 @@ class Actor():
             self.disappear_steps -= 1
 
         # wrap boxes and features as detections
-        det_gt = Detection(box=box_gt,
-                           score=1.,
-                           class_id=self.class_id,
-                           feature=self.color)
+        det_gt = Detection(
+            box=box_gt, score=1.0, class_id=self.class_id, feature=self.color
+        )
 
         feature_pred = [random.gauss(0, 5) + v for v in self.color]
-        det_pred = Detection(box=box_pred,
-                             score=random.uniform(0.5, 1.),
-                             class_id=max(
-                                 0, self.class_id + random.randint(-1, 1)),
-                             feature=feature_pred)
+        det_pred = Detection(
+            box=box_pred,
+            score=random.uniform(0.5, 1.0),
+            class_id=max(0, self.class_id + random.randint(-1, 1)),
+            feature=feature_pred,
+        )
 
         return det_gt, det_pred
 
 
-def data_generator(num_steps: int = 1000,
-                   num_objects: int = 1,
-                   max_omega: float = 0.01,
-                   miss_prob: float = 0.1,
-                   disappear_prob: float = 0.0,
-                   det_err_sigma: float = 1.0):
-
+def data_generator(
+    num_steps: int = 1000,
+    num_objects: int = 1,
+    max_omega: float = 0.01,
+    miss_prob: float = 0.1,
+    disappear_prob: float = 0.0,
+    det_err_sigma: float = 1.0,
+):
     actors = [
-        Actor(max_omega=max_omega,
-              miss_prob=miss_prob,
-              disappear_prob=disappear_prob,
-              det_err_sigma=det_err_sigma,
-              canvas_size=CANVAS_SIZE) for _ in range(num_objects)
+        Actor(
+            max_omega=max_omega,
+            miss_prob=miss_prob,
+            disappear_prob=disappear_prob,
+            det_err_sigma=det_err_sigma,
+            canvas_size=CANVAS_SIZE,
+        )
+        for _ in range(num_objects)
     ]
 
     for step in range(num_steps):

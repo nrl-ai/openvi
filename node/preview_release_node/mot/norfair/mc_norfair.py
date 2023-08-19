@@ -2,7 +2,9 @@
 import numpy as np
 
 from node.preview_release_node.mot.norfair.tracker import Detection
-from node.preview_release_node.mot.norfair.tracker import Tracker as NorfairTracker
+from node.preview_release_node.mot.norfair.tracker import (
+    Tracker as NorfairTracker,
+)
 
 
 def euclidean_distance(detection, tracked_object):
@@ -10,7 +12,6 @@ def euclidean_distance(detection, tracked_object):
 
 
 class MultiClassNorfair(object):
-
     def __init__(
         self,
         fps=30,
@@ -64,7 +65,7 @@ class MultiClassNorfair(object):
                 x2 = result.estimate[1][0]
                 y2 = result.estimate[1][1]
 
-                t_ids.append(str(int(class_id)) + '_' + str(result.id))
+                t_ids.append(str(int(class_id)) + "_" + str(result.id))
                 t_bboxes.append([x1, y1, x2, y2])
                 t_scores.append(score)
                 t_class_ids.append(int(class_id))

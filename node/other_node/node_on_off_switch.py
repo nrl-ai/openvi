@@ -17,13 +17,13 @@ def image_process(image):
 
 
 class Node(DpgNodeABC):
-    _ver = '0.0.1'
+    _ver = "0.0.1"
 
-    node_label = 'ON/OFF Switch'
-    node_tag = 'OnOffSwitch'
+    node_label = "ON/OFF Switch"
+    node_tag = "OnOffSwitch"
 
-    _switch_on = 'ON'
-    _switch_off = 'OFF'
+    _switch_on = "ON"
+    _switch_off = "OFF"
 
     _opencv_setting_dict = None
 
@@ -39,19 +39,31 @@ class Node(DpgNodeABC):
         callback=None,
     ):
         # タグ名
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input01_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Input01'
-        tag_node_input01_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Input01Value'
-        tag_node_output01_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01'
-        tag_node_output01_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input01_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Input01"
+        )
+        tag_node_input01_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Input01Value"
+        )
+        tag_node_output01_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01"
+        )
+        tag_node_output01_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
 
-        tag_switch_select_name = tag_node_name + ':' + self.TYPE_TEXT + ':Switch'
-        tag_switch_select_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':SwitchValue'
+        tag_switch_select_name = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":Switch"
+        )
+        tag_switch_select_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":SwitchValue"
+        )
 
         # OpenCV向け設定
         self._opencv_setting_dict = opencv_setting_dict
-        small_window_w = int(self._opencv_setting_dict['process_width'] / 2)
-        small_window_h = int(self._opencv_setting_dict['process_height'] / 2)
+        small_window_w = int(self._opencv_setting_dict["process_width"] / 2)
+        small_window_h = int(self._opencv_setting_dict["process_height"] / 2)
 
         # 初期化用黒画像
         black_image = np.zeros((small_window_w, small_window_h, 3))
@@ -73,30 +85,30 @@ class Node(DpgNodeABC):
 
         # ノード
         with dpg.node(
-                tag=tag_node_name,
-                parent=parent,
-                label=self.node_label,
-                pos=pos,
+            tag=tag_node_name,
+            parent=parent,
+            label=self.node_label,
+            pos=pos,
         ):
             # 入力端子
             with dpg.node_attribute(
-                    tag=tag_node_input01_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input01_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_text(
                     tag=tag_node_input01_value_name,
-                    default_value='Input BGR image',
+                    default_value="Input BGR image",
                 )
             # 画像
             with dpg.node_attribute(
-                    tag=tag_node_output01_name,
-                    attribute_type=dpg.mvNode_Attr_Output,
+                tag=tag_node_output01_name,
+                attribute_type=dpg.mvNode_Attr_Output,
             ):
                 dpg.add_image(tag_node_output01_value_name)
             # ON/OFF切り替え
             with dpg.node_attribute(
-                    tag=tag_switch_select_name,
-                    attribute_type=dpg.mvNode_Attr_Static,
+                tag=tag_switch_select_name,
+                attribute_type=dpg.mvNode_Attr_Static,
             ):
                 dpg.add_radio_button(
                     (self._switch_on, self._switch_off),
@@ -114,20 +126,24 @@ class Node(DpgNodeABC):
         node_image_dict,
         node_result_dict,
     ):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        output_value01_tag = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        output_value01_tag = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
 
-        tag_switch_select_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':SwitchValue'
+        tag_switch_select_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":SwitchValue"
+        )
 
-        small_window_w = int(self._opencv_setting_dict['process_width'] / 2)
-        small_window_h = int(self._opencv_setting_dict['process_height'] / 2)
+        small_window_w = int(self._opencv_setting_dict["process_width"] / 2)
+        small_window_h = int(self._opencv_setting_dict["process_height"] / 2)
 
         # 画像取得元のノード名(ID付き)を取得する
-        connection_info_src = ''
+        connection_info_src = ""
         for connection_info in connection_list:
             connection_info_src = connection_info[0]
-            connection_info_src = connection_info_src.split(':')[:2]
-            connection_info_src = ':'.join(connection_info_src)
+            connection_info_src = connection_info_src.split(":")[:2]
+            connection_info_src = ":".join(connection_info_src)
 
         # ON/OFF選択状態取得
         switch_status = dpg_get_value(tag_switch_select_value_name)
@@ -155,13 +171,13 @@ class Node(DpgNodeABC):
         pass
 
     def get_setting_dict(self, node_id):
-        tag_node_name = str(node_id) + ':' + self.node_tag
+        tag_node_name = str(node_id) + ":" + self.node_tag
 
         pos = dpg.get_item_pos(tag_node_name)
 
         setting_dict = {}
-        setting_dict['ver'] = self._ver
-        setting_dict['pos'] = pos
+        setting_dict["ver"] = self._ver
+        setting_dict["pos"] = pos
 
         return setting_dict
 

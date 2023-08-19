@@ -8,10 +8,10 @@ from node.node_abc import DpgNodeABC
 
 
 class Node(DpgNodeABC):
-    _ver = '0.0.1'
+    _ver = "0.0.1"
 
-    node_label = 'Int Value'
-    node_tag = 'IntValue'
+    node_label = "Int Value"
+    node_tag = "IntValue"
 
     def __init__(self):
         pass
@@ -25,25 +25,29 @@ class Node(DpgNodeABC):
         callback=None,
     ):
         # タグ名
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_output01_name = tag_node_name + ':' + self.TYPE_INT + ':Output01'
-        tag_node_output01_value_name = tag_node_name + ':' + self.TYPE_INT + ':Output01Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_output01_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Output01"
+        )
+        tag_node_output01_value_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Output01Value"
+        )
 
         # 設定
         self._opencv_setting_dict = opencv_setting_dict
-        small_window_w = self._opencv_setting_dict['input_window_width']
+        small_window_w = self._opencv_setting_dict["input_window_width"]
 
         # ノード
         with dpg.node(
-                tag=tag_node_name,
-                parent=parent,
-                label=self.node_label,
-                pos=pos,
+            tag=tag_node_name,
+            parent=parent,
+            label=self.node_label,
+            pos=pos,
         ):
             # 整数入力
             with dpg.node_attribute(
-                    tag=tag_node_output01_name,
-                    attribute_type=dpg.mvNode_Attr_Output,
+                tag=tag_node_output01_name,
+                attribute_type=dpg.mvNode_Attr_Output,
             ):
                 dpg.add_input_int(
                     tag=tag_node_output01_value_name,
@@ -68,23 +72,27 @@ class Node(DpgNodeABC):
         pass
 
     def get_setting_dict(self, node_id):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        output_value_tag = tag_node_name + ':' + self.TYPE_INT + ':Output01Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        output_value_tag = (
+            tag_node_name + ":" + self.TYPE_INT + ":Output01Value"
+        )
 
         output_value = round((dpg_get_value(output_value_tag)), 3)
 
         pos = dpg.get_item_pos(tag_node_name)
 
         setting_dict = {}
-        setting_dict['ver'] = self._ver
-        setting_dict['pos'] = pos
+        setting_dict["ver"] = self._ver
+        setting_dict["pos"] = pos
         setting_dict[output_value_tag] = output_value
 
         return setting_dict
 
     def set_setting_dict(self, node_id, setting_dict):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        output_value_tag = tag_node_name + ':' + self.TYPE_INT + ':Output01Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        output_value_tag = (
+            tag_node_name + ":" + self.TYPE_INT + ":Output01Value"
+        )
 
         output_value = float(setting_dict[output_value_tag])
 

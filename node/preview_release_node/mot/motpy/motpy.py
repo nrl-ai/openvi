@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from node.preview_release_node.mot.motpy.tracker import Detection, MultiObjectTracker
+from node.preview_release_node.mot.motpy.tracker import (
+    Detection,
+    MultiObjectTracker,
+)
 
 
 class Motpy(object):
@@ -21,18 +24,18 @@ class Motpy(object):
 
         self.tracker = MultiObjectTracker(
             dt=1 / fps,
-            tracker_kwargs={'max_staleness': max_staleness},
+            tracker_kwargs={"max_staleness": max_staleness},
             model_spec={
-                'order_pos': order_pos,
-                'dim_pos': dim_pos,
-                'order_size': order_size,
-                'dim_size': dim_size,
-                'q_var_pos': q_var_pos,
-                'r_var_pos': r_var_pos
+                "order_pos": order_pos,
+                "dim_pos": dim_pos,
+                "order_size": order_size,
+                "dim_size": dim_size,
+                "q_var_pos": q_var_pos,
+                "r_var_pos": r_var_pos,
             },
             matching_fn_kwargs={
-                'min_iou': min_iou,
-                'multi_match_min_iou': multi_match_min_iou
+                "min_iou": min_iou,
+                "multi_match_min_iou": multi_match_min_iou,
             },
         )
 

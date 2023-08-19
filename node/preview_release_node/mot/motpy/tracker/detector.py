@@ -9,4 +9,6 @@ class BaseObjectDetector:
         pass
 
     def process_image(self, image: NpImage) -> Sequence[Detection]:
-        raise NotImplementedError('subclass the BaseObjectDetector with your custom detector')
+        raise NotImplementedError(
+            "subclass the BaseObjectDetector with your custom detector"
+        )

@@ -12,11 +12,13 @@ from node.node_abc import DpgNodeABC
 from node_editor.util import convert_cv_to_dpg
 from node.draw_node.draw_util.draw_util import draw_info
 
+
 def image_process(image1, image2, alpha_val, beta_val, gamma_val):
     image1_height, image1_width = image1.shape[:2]
     image2 = cv2.resize(image2, (image1_width, image1_height))
     image = cv2.addWeighted(image1, alpha_val, image2, beta_val, gamma_val)
     return image
+
 
 def create_image_dict(
     slot_num,
@@ -40,7 +42,7 @@ def create_image_dict(
         if frame is not None:
             if draw_info_on_result:
                 node_result = node_result_dict[node_id_name]
-                image_node_name = node_id_name.split(':')[1]
+                image_node_name = node_id_name.split(":")[1]
                 frame = draw_info(image_node_name, node_result, frame)
             resize_frame = cv2.resize(frame, (resize_width, resize_height))
             frame_dict[slot_num - index - 1] = copy.deepcopy(resize_frame)
@@ -61,10 +63,10 @@ def create_image_dict(
 
 
 class Node(DpgNodeABC):
-    _ver = '0.0.1'
+    _ver = "0.0.1"
 
-    node_label = 'Image Alpha Blend'
-    node_tag = 'ImageAlphaBlend'
+    node_label = "Image Alpha Blend"
+    node_tag = "ImageAlphaBlend"
     _max_slot_number = 2
     _slot_id = {}
     _alpha_min = 0.0
@@ -74,7 +76,7 @@ class Node(DpgNodeABC):
     _beta_max = 1.0
     _beta_default = 0.3
     _gamma_min = 0
-    _gamma_max = 255 
+    _gamma_max = 255
     _gamma_default = 0
 
     _opencv_setting_dict = None
@@ -91,27 +93,55 @@ class Node(DpgNodeABC):
         callback=None,
     ):
         # タグ名
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input01_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Input01'
-        tag_node_input01_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Input01Value'
-        tag_node_input02_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Input02'
-        tag_node_input02_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Input02Value'
-        tag_node_input03_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input03'
-        tag_node_input03_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input03Value'
-        tag_node_input04_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input04'
-        tag_node_input04_value_name = tag_node_name + ':' + self.TYPE_FLOAT + ':Input04Value'
-        tag_node_input05_name = tag_node_name + ':' + self.TYPE_INT + ':Input05'
-        tag_node_input05_value_name = tag_node_name + ':' + self.TYPE_INT + ':Input05Value'
-        tag_node_output01_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01'
-        tag_node_output01_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
-        tag_node_output02_name = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02'
-        tag_node_output02_value_name = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input01_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Input01"
+        )
+        tag_node_input01_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Input01Value"
+        )
+        tag_node_input02_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Input02"
+        )
+        tag_node_input02_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Input02Value"
+        )
+        tag_node_input03_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input03"
+        )
+        tag_node_input03_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input03Value"
+        )
+        tag_node_input04_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input04"
+        )
+        tag_node_input04_value_name = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input04Value"
+        )
+        tag_node_input05_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input05"
+        )
+        tag_node_input05_value_name = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input05Value"
+        )
+        tag_node_output01_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01"
+        )
+        tag_node_output01_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
+        tag_node_output02_name = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02"
+        )
+        tag_node_output02_value_name = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02Value"
+        )
 
         # OpenCV向け設定
         self._opencv_setting_dict = opencv_setting_dict
-        small_window_w = self._opencv_setting_dict['process_width']
-        small_window_h = self._opencv_setting_dict['process_height']
-        use_pref_counter = self._opencv_setting_dict['use_pref_counter']
+        small_window_w = self._opencv_setting_dict["process_width"]
+        small_window_h = self._opencv_setting_dict["process_height"]
+        use_pref_counter = self._opencv_setting_dict["use_pref_counter"]
 
         # 初期化用黒画像
         black_image = np.zeros((small_window_w, small_window_h, 3))
@@ -137,39 +167,39 @@ class Node(DpgNodeABC):
 
         # ノード
         with dpg.node(
-                tag=tag_node_name,
-                parent=parent,
-                label=self.node_label,
-                pos=pos,
+            tag=tag_node_name,
+            parent=parent,
+            label=self.node_label,
+            pos=pos,
         ):
             # 入力端子
             with dpg.node_attribute(
-                    tag=tag_node_input01_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input01_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_text(
                     tag=tag_node_input01_value_name,
-                    default_value='Input BGR image',
+                    default_value="Input BGR image",
                 )
             # 入力端子
             with dpg.node_attribute(
-                    tag=tag_node_input02_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input02_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_text(
                     tag=tag_node_input02_value_name,
-                    default_value='Input BGR image',
+                    default_value="Input BGR image",
                 )
             # 画像
             with dpg.node_attribute(
-                    tag=tag_node_output01_name,
-                    attribute_type=dpg.mvNode_Attr_Output,
+                tag=tag_node_output01_name,
+                attribute_type=dpg.mvNode_Attr_Output,
             ):
                 dpg.add_image(tag_node_output01_value_name)
             # ヒステリシス
             with dpg.node_attribute(
-                    tag=tag_node_input03_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input03_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input03_value_name,
@@ -181,8 +211,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input04_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input04_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_float(
                     tag=tag_node_input04_value_name,
@@ -194,8 +224,8 @@ class Node(DpgNodeABC):
                     callback=None,
                 )
             with dpg.node_attribute(
-                    tag=tag_node_input05_name,
-                    attribute_type=dpg.mvNode_Attr_Input,
+                tag=tag_node_input05_name,
+                attribute_type=dpg.mvNode_Attr_Input,
             ):
                 dpg.add_slider_int(
                     tag=tag_node_input05_value_name,
@@ -209,12 +239,12 @@ class Node(DpgNodeABC):
             # 処理時間
             if use_pref_counter:
                 with dpg.node_attribute(
-                        tag=tag_node_output02_name,
-                        attribute_type=dpg.mvNode_Attr_Output,
+                    tag=tag_node_output02_name,
+                    attribute_type=dpg.mvNode_Attr_Output,
                 ):
                     dpg.add_text(
                         tag=tag_node_output02_value_name,
-                        default_value='elapsed time(ms)',
+                        default_value="elapsed time(ms)",
                     )
 
         return tag_node_name
@@ -226,74 +256,85 @@ class Node(DpgNodeABC):
         node_image_dict,
         node_result_dict,
     ):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        input_value03_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input03Value'
-        input_value04_tag = tag_node_name + ':' + self.TYPE_FLOAT + ':Input04Value'
-        input_value05_tag = tag_node_name + ':' + self.TYPE_INT + ':Input05Value'
-        output_value01_tag = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
-        output_value02_tag = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        input_value03_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input03Value"
+        )
+        input_value04_tag = (
+            tag_node_name + ":" + self.TYPE_FLOAT + ":Input04Value"
+        )
+        input_value05_tag = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input05Value"
+        )
+        output_value01_tag = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
+        output_value02_tag = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02Value"
+        )
 
-        small_window_w = self._opencv_setting_dict['process_width']
-        small_window_h = self._opencv_setting_dict['process_height']
-        use_pref_counter = self._opencv_setting_dict['use_pref_counter']
-        draw_info_on_result = self._opencv_setting_dict['draw_info_on_result']
+        small_window_w = self._opencv_setting_dict["process_width"]
+        small_window_h = self._opencv_setting_dict["process_height"]
+        use_pref_counter = self._opencv_setting_dict["use_pref_counter"]
+        draw_info_on_result = self._opencv_setting_dict["draw_info_on_result"]
 
         # 接続情報確認
         frame = None
         frame1 = None
         frame2 = None
         node_name_dict = {}
-        connection_info_src = ''
+        connection_info_src = ""
         connection_info_src_dict = {}
         for connection_info in connection_list:
-
             # タグ名からスロットナンバー取得
-            slot_number = re.sub(r'\D', '', connection_info[1].split(':')[-1])
-            if slot_number == '':
+            slot_number = re.sub(r"\D", "", connection_info[1].split(":")[-1])
+            if slot_number == "":
                 continue
             slot_number = int(slot_number) - 1
-            connection_type = connection_info[0].split(':')[2]
-            connection_tag = connection_info[1].split(':')[3]
+            connection_type = connection_info[0].split(":")[2]
+            connection_tag = connection_info[1].split(":")[3]
             if connection_type == self.TYPE_FLOAT:
                 # 接続タグ取得
-                source_tag = connection_info[0] + 'Value'
-                destination_tag = connection_info[1] + 'Value'
+                source_tag = connection_info[0] + "Value"
+                destination_tag = connection_info[1] + "Value"
                 # 値更新
-                input_value = round(float(dpg_get_value(source_tag)),3)
-                if connection_tag == 'Input03':
+                input_value = round(float(dpg_get_value(source_tag)), 3)
+                if connection_tag == "Input03":
                     input_value = max([self._alpha_min, input_value])
                     input_value = min([self._alpha_max, input_value])
-                if connection_tag == 'Input04':
+                if connection_tag == "Input04":
                     input_value = max([self._beta_min, input_value])
                     input_value = min([self._beta_max, input_value])
                 dpg_set_value(destination_tag, input_value)
             if connection_type == self.TYPE_INT:
                 # 接続タグ取得
-                source_tag = connection_info[0] + 'Value'
-                destination_tag = connection_info[1] + 'Value'
+                source_tag = connection_info[0] + "Value"
+                destination_tag = connection_info[1] + "Value"
                 # 値更新
                 input_value = int(dpg_get_value(source_tag))
-                if connection_tag == 'Input05':
+                if connection_tag == "Input05":
                     input_value = max([self._gamma_min, input_value])
                     input_value = min([self._gamma_max, input_value])
                 dpg_set_value(destination_tag, input_value)
             if connection_type == self.TYPE_IMAGE:
                 # 画像取得元のノード名(ID付き)を取得
                 connection_info_src = connection_info[0]
-                connection_info_src = connection_info_src.split(':')[:2]
+                connection_info_src = connection_info_src.split(":")[:2]
                 node_name = connection_info_src[1]
-                connection_info_src = ':'.join(connection_info_src)
+                connection_info_src = ":".join(connection_info_src)
                 node_name_dict[slot_number] = node_name
                 connection_info_src_dict[slot_number] = connection_info_src
 
         # 画像取得
 
         if len(connection_info_src_dict) == 1:
-            connected_first_slot_no = (next(iter(connection_info_src_dict)))
-            frame1 = node_image_dict.get(connection_info_src_dict[connected_first_slot_no])
+            connected_first_slot_no = next(iter(connection_info_src_dict))
+            frame1 = node_image_dict.get(
+                connection_info_src_dict[connected_first_slot_no]
+            )
             frame = frame1
         if len(connection_info_src_dict) == 2:
-            frame1 = node_image_dict.get(connection_info_src_dict[0])  
+            frame1 = node_image_dict.get(connection_info_src_dict[0])
             frame2 = node_image_dict.get(connection_info_src_dict[1])
             frame = frame1
 
@@ -305,17 +346,20 @@ class Node(DpgNodeABC):
         # 計測開始
         if frame is not None and use_pref_counter:
             start_time = time.perf_counter()
-        
+
         if len(connection_info_src_dict) == 2:
             if frame1 is not None and frame2 is not None:
-                frame = image_process(frame1, frame2, alpha_val, beta_val, gamma_val)
+                frame = image_process(
+                    frame1, frame2, alpha_val, beta_val, gamma_val
+                )
 
         # 計測終了
         if frame is not None and use_pref_counter:
             elapsed_time = time.perf_counter() - start_time
             elapsed_time = int(elapsed_time * 1000)
-            dpg_set_value(output_value02_tag,
-                          str(elapsed_time).zfill(4) + 'ms')
+            dpg_set_value(
+                output_value02_tag, str(elapsed_time).zfill(4) + "ms"
+            )
 
         # 描画
         if frame is not None:
@@ -332,23 +376,27 @@ class Node(DpgNodeABC):
         pass
 
     def get_setting_dict(self, node_id):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        input_value03_tag = tag_node_name + ':' + self.TYPE_INT + ':Input03Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        input_value03_tag = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input03Value"
+        )
 
         kernel_size = dpg_get_value(input_value03_tag)
 
         pos = dpg.get_item_pos(tag_node_name)
 
         setting_dict = {}
-        setting_dict['ver'] = self._ver
-        setting_dict['pos'] = pos
+        setting_dict["ver"] = self._ver
+        setting_dict["pos"] = pos
         setting_dict[input_value03_tag] = kernel_size
 
         return setting_dict
 
     def set_setting_dict(self, node_id, setting_dict):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        input_value03_tag = tag_node_name + ':' + self.TYPE_INT + ':Input02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        input_value03_tag = (
+            tag_node_name + ":" + self.TYPE_INT + ":Input02Value"
+        )
 
         kernel_size = int(setting_dict[input_value03_tag])
 

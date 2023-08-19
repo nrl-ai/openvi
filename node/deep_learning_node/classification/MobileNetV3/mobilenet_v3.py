@@ -5,7 +5,6 @@ import onnxruntime
 
 
 class MobileNetV3(object):
-
     def __init__(
         self,
         model_path,
@@ -16,8 +15,8 @@ class MobileNetV3(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider',
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
         ],
     ):
         # モデル読み込み
@@ -40,7 +39,7 @@ class MobileNetV3(object):
             dsize=(self.input_shape[1], self.input_shape[0]),
         )
         input_image = cv.cvtColor(input_image, cv.COLOR_BGR2RGB)
-        input_image = np.expand_dims(input_image, axis=0).astype('float32')
+        input_image = np.expand_dims(input_image, axis=0).astype("float32")
 
         # Inference
         input_name = self.onnx_session.get_inputs()[0].name
@@ -55,11 +54,11 @@ class MobileNetV3(object):
         return class_scores, class_ids
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cap = cv.VideoCapture(0)
 
     # Load model
-    model_path = 'model/MobileNetV3Small.onnx'
+    model_path = "model/MobileNetV3Small.onnx"
     model = MobileNetV3(model_path)
 
     while True:
@@ -76,7 +75,7 @@ if __name__ == '__main__':
         key = cv.waitKey(1)
         if key == 27:  # ESC
             break
-        cv.imshow('MobileNetV3 Input', frame)
+        cv.imshow("MobileNetV3 Input", frame)
 
     cap.release()
     cv.destroyAllWindows()

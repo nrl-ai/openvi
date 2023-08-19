@@ -10,7 +10,12 @@ except ImportError:
     cv2 = DummyOpenCVImport()
 import numpy as np
 from rich import print
-from rich.progress import BarColumn, Progress, ProgressColumn, TimeRemainingColumn
+from rich.progress import (
+    BarColumn,
+    Progress,
+    ProgressColumn,
+    TimeRemainingColumn,
+)
 
 from .utils import get_terminal_size
 
@@ -53,7 +58,9 @@ class Video:
                     f"[bold red]Error:[/bold red] File '{self.input_path}' does not exist."
                 )
             self.video_capture = cv2.VideoCapture(self.input_path)
-            total_frames = int(self.video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
+            total_frames = int(
+                self.video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
+            )
             if total_frames == 0:
                 self._fail(
                     f"[bold red]Error:[/bold red] '{self.input_path}' does not seem to be a video file supported by OpenCV. If the video file is not the problem, please check that your OpenCV installation is working correctly."
@@ -135,7 +142,9 @@ class Video:
         if self.output_video is None:
             # The user may need to access the output file path on their code
             output_file_path = self.get_output_file_path()
-            fourcc = cv2.VideoWriter_fourcc(*self.get_codec_fourcc(output_file_path))
+            fourcc = cv2.VideoWriter_fourcc(
+                *self.get_codec_fourcc(output_file_path)
+            )
             # Set on first frame write in case the user resizes the frame in some way
             output_size = (
                 frame.shape[1],
@@ -192,9 +201,7 @@ class Video:
                 f"[yellow]{filename}[/yellow]\n"
                 f"Please use '.mp4', '.avi', or provide a custom OpenCV fourcc codec name."
             )
-            return (
-                None  # Had to add this return to make mypya happy. I don't like this.
-            )
+            return None  # Had to add this return to make mypya happy. I don't like this.
 
     def abbreviate_description(self, description: str) -> str:
         """Conditionally abbreviate description so that progress bar fits in small terminals"""
@@ -213,7 +220,6 @@ class Video:
 
 class VideoFromFrames:
     def __init__(self, input_path, save_path=".", information_file=None):
-
         if information_file is None:
             information_file = metrics.InformationFile(
                 file_path=os.path.join(input_path, "seqinfo.ini")
@@ -225,7 +231,9 @@ class VideoFromFrames:
         fps = information_file.search(variable_name="frameRate")
 
         # Search resolution in seqinfo.ini
-        horizontal_resolution = information_file.search(variable_name="imWidth")
+        horizontal_resolution = information_file.search(
+            variable_name="imWidth"
+        )
         vertical_resolution = information_file.search(variable_name="imHeight")
         image_size = (horizontal_resolution, vertical_resolution)
 
@@ -242,7 +250,9 @@ class VideoFromFrames:
         self.file_name = file_name
         self.input_path = input_path
         self.frame_number = 1
-        self.video = cv2.VideoWriter(video_path, fourcc, fps, image_size)  # Video file
+        self.video = cv2.VideoWriter(
+            video_path, fourcc, fps, image_size
+        )  # Video file
         self.image_extension = information_file.search("imExt")
         self.image_directory = information_file.search("imDir")
 

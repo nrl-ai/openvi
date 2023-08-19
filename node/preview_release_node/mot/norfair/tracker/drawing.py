@@ -63,7 +63,9 @@ def draw_tracked_objects(
         if not obj.live_points.any():
             continue
         if color is None:
-            object_id = obj.id if obj.id is not None else random.randint(0, 999)
+            object_id = (
+                obj.id if obj.id is not None else random.randint(0, 999)
+            )
             point_color = Color.random(object_id)
             id_color = point_color
         else:
@@ -195,7 +197,9 @@ def centroid(tracked_points: np.array) -> Tuple[int, int]:
     return int(sum_x / num_points), int(sum_y / num_points)
 
 
-def draw_boxes(frame, detections, line_color=None, line_width=None, random_color=False):
+def draw_boxes(
+    frame, detections, line_color=None, line_width=None, random_color=False
+):
     frame_scale = frame.shape[0] / 100
     if detections is None:
         return frame

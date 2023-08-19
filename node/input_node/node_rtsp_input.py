@@ -36,14 +36,14 @@ def receive_image_process(rtsp_url, image_queue, request):
 
 
 class Node(DpgNodeABC):
-    _ver = '0.0.1'
+    _ver = "0.0.1"
 
-    node_label = 'RTSP'
-    node_tag = 'RTSPInput'
+    node_label = "RTSP"
+    node_tag = "RTSPInput"
 
     _opencv_setting_dict = None
-    _start_label = 'Start'
-    _stop_label = 'Stop'
+    _start_label = "Start"
+    _stop_label = "Stop"
 
     _rtsp_capture = {}
 
@@ -63,22 +63,36 @@ class Node(DpgNodeABC):
         callback=None,
     ):
         # タグ名
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input01_name = tag_node_name + ':' + self.TYPE_TEXT + ':Input01'
-        tag_node_input01_value_name = tag_node_name + ':' + self.TYPE_TEXT + ':Input01Value'
-        tag_node_output01_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01'
-        tag_node_output01_value_name = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
-        tag_node_output02_name = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02'
-        tag_node_output02_value_name = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input01_name = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":Input01"
+        )
+        tag_node_input01_value_name = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":Input01Value"
+        )
+        tag_node_output01_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01"
+        )
+        tag_node_output01_value_name = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
+        tag_node_output02_name = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02"
+        )
+        tag_node_output02_value_name = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02Value"
+        )
 
-        tag_node_button_name = tag_node_name + ':' + self.TYPE_TEXT + ':Button'
-        tag_node_button_value_name = tag_node_name + ':' + self.TYPE_TEXT + ':ButtonValue'
+        tag_node_button_name = tag_node_name + ":" + self.TYPE_TEXT + ":Button"
+        tag_node_button_value_name = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":ButtonValue"
+        )
 
         # OpenCV向け設定
         self._opencv_setting_dict = opencv_setting_dict
-        small_window_w = self._opencv_setting_dict['input_window_width']
-        small_window_h = self._opencv_setting_dict['input_window_height']
-        use_pref_counter = self._opencv_setting_dict['use_pref_counter']
+        small_window_w = self._opencv_setting_dict["input_window_width"]
+        small_window_h = self._opencv_setting_dict["input_window_height"]
+        use_pref_counter = self._opencv_setting_dict["use_pref_counter"]
 
         # 初期化用黒画像
         black_image = np.zeros((small_window_w, small_window_h, 3))
@@ -100,31 +114,31 @@ class Node(DpgNodeABC):
 
         # ノード
         with dpg.node(
-                tag=tag_node_name,
-                parent=parent,
-                label=self.node_label,
-                pos=pos,
+            tag=tag_node_name,
+            parent=parent,
+            label=self.node_label,
+            pos=pos,
         ):
             # RTSP URL入力欄
             with dpg.node_attribute(
-                    tag=tag_node_input01_name,
-                    attribute_type=dpg.mvNode_Attr_Static,
+                tag=tag_node_input01_name,
+                attribute_type=dpg.mvNode_Attr_Static,
             ):
                 dpg.add_input_text(
                     tag=tag_node_input01_value_name,
-                    label='URL',
+                    label="URL",
                     width=small_window_w - 30,
                 )
             # カメラ画像
             with dpg.node_attribute(
-                    tag=tag_node_output01_name,
-                    attribute_type=dpg.mvNode_Attr_Output,
+                tag=tag_node_output01_name,
+                attribute_type=dpg.mvNode_Attr_Output,
             ):
                 dpg.add_image(tag_node_output01_value_name)
             # 録画/再生追加ボタン
             with dpg.node_attribute(
-                    tag=tag_node_button_name,
-                    attribute_type=dpg.mvNode_Attr_Static,
+                tag=tag_node_button_name,
+                attribute_type=dpg.mvNode_Attr_Static,
             ):
                 dpg.add_button(
                     label=self._start_label,
@@ -136,12 +150,12 @@ class Node(DpgNodeABC):
             # 処理時間
             if use_pref_counter:
                 with dpg.node_attribute(
-                        tag=tag_node_output02_name,
-                        attribute_type=dpg.mvNode_Attr_Output,
+                    tag=tag_node_output02_name,
+                    attribute_type=dpg.mvNode_Attr_Output,
                 ):
                     dpg.add_text(
                         tag=tag_node_output02_value_name,
-                        default_value='elapsed time(ms)',
+                        default_value="elapsed time(ms)",
                     )
 
         return tag_node_name
@@ -153,17 +167,23 @@ class Node(DpgNodeABC):
         node_image_dict,
         node_result_dict,
     ):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        input_value01_tag = tag_node_name + ':' + self.TYPE_TEXT + ':Input01Value'
-        output_value01_tag = tag_node_name + ':' + self.TYPE_IMAGE + ':Output01Value'
-        output_value02_tag = tag_node_name + ':' + self.TYPE_TIME_MS + ':Output02Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        input_value01_tag = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":Input01Value"
+        )
+        output_value01_tag = (
+            tag_node_name + ":" + self.TYPE_IMAGE + ":Output01Value"
+        )
+        output_value02_tag = (
+            tag_node_name + ":" + self.TYPE_TIME_MS + ":Output02Value"
+        )
 
-        small_window_w = self._opencv_setting_dict['input_window_width']
-        small_window_h = self._opencv_setting_dict['input_window_height']
-        use_pref_counter = self._opencv_setting_dict['use_pref_counter']
+        small_window_w = self._opencv_setting_dict["input_window_width"]
+        small_window_h = self._opencv_setting_dict["input_window_height"]
+        use_pref_counter = self._opencv_setting_dict["use_pref_counter"]
 
         # multiprocessing使用有無
-        use_mp = self._opencv_setting_dict['use_multiprocessing_rtsp']
+        use_mp = self._opencv_setting_dict["use_multiprocessing_rtsp"]
 
         # RTSP URL取得
         rtsp_url = dpg_get_value(input_value01_tag)
@@ -171,7 +191,7 @@ class Node(DpgNodeABC):
         # VideoCapture()インスタンス取得
         rtsp_capture = None
         image_queue = None
-        if rtsp_url != '':
+        if rtsp_url != "":
             if use_mp:
                 # multiprocessing使用
                 if rtsp_url in self._image_queue:
@@ -182,7 +202,7 @@ class Node(DpgNodeABC):
                     rtsp_capture = self._rtsp_capture[rtsp_url]
 
         # 計測開始
-        if rtsp_url != '' and use_pref_counter:
+        if rtsp_url != "" and use_pref_counter:
             start_time = time.perf_counter()
 
         # 画像取得
@@ -201,11 +221,12 @@ class Node(DpgNodeABC):
                     return None, None
 
         # 計測終了
-        if rtsp_url != '' and use_pref_counter:
+        if rtsp_url != "" and use_pref_counter:
             elapsed_time = time.perf_counter() - start_time
             elapsed_time = int(elapsed_time * 1000)
-            dpg_set_value(output_value02_tag,
-                          str(elapsed_time).zfill(4) + 'ms')
+            dpg_set_value(
+                output_value02_tag, str(elapsed_time).zfill(4) + "ms"
+            )
 
         # 描画
         if frame is not None:
@@ -220,7 +241,7 @@ class Node(DpgNodeABC):
 
     def close(self, node_id):
         # multiprocessing使用有無
-        use_mp = self._opencv_setting_dict['use_multiprocessing_rtsp']
+        use_mp = self._opencv_setting_dict["use_multiprocessing_rtsp"]
         if use_mp:
             # multiprocessing使用
             for rtsp_url in self._process.keys():
@@ -229,22 +250,26 @@ class Node(DpgNodeABC):
                     self._process[rtsp_url].terminate()
 
     def get_setting_dict(self, node_id):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input01_value_name = tag_node_name + ':' + self.TYPE_TEXT + ':Input01Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input01_value_name = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":Input01Value"
+        )
 
         pos = dpg.get_item_pos(tag_node_name)
         rtsp_url = dpg_get_value(tag_node_input01_value_name)
 
         setting_dict = {}
-        setting_dict['ver'] = self._ver
-        setting_dict['pos'] = pos
+        setting_dict["ver"] = self._ver
+        setting_dict["pos"] = pos
         setting_dict[tag_node_input01_value_name] = rtsp_url
 
         return setting_dict
 
     def set_setting_dict(self, node_id, setting_dict):
-        tag_node_name = str(node_id) + ':' + self.node_tag
-        tag_node_input01_value_name = tag_node_name + ':' + self.TYPE_TEXT + ':Input01Value'
+        tag_node_name = str(node_id) + ":" + self.node_tag
+        tag_node_input01_value_name = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":Input01Value"
+        )
 
         rtsp_url = setting_dict[tag_node_input01_value_name]
 
@@ -252,8 +277,12 @@ class Node(DpgNodeABC):
 
     def _button(self, sender, data, user_data):
         tag_node_name = user_data
-        input_value01_tag = tag_node_name + ':' + self.TYPE_TEXT + ':Input01Value'
-        tag_node_button_value_name = tag_node_name + ':' + self.TYPE_TEXT + ':ButtonValue'
+        input_value01_tag = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":Input01Value"
+        )
+        tag_node_button_value_name = (
+            tag_node_name + ":" + self.TYPE_TEXT + ":ButtonValue"
+        )
 
         label = dpg.get_item_label(tag_node_button_value_name)
 
@@ -261,19 +290,22 @@ class Node(DpgNodeABC):
         rtsp_url = dpg_get_value(input_value01_tag)
 
         # multiprocessing使用有無
-        use_mp = self._opencv_setting_dict['use_multiprocessing_rtsp']
+        use_mp = self._opencv_setting_dict["use_multiprocessing_rtsp"]
 
         if label == self._start_label:
-            if rtsp_url != '':
+            if rtsp_url != "":
                 if use_mp:
                     # multiprocessing使用
                     if not (rtsp_url in self._process):
                         self._image_queue[rtsp_url] = mp.Queue(maxsize=1)
-                        self._request[rtsp_url] = mp.Value('i', 1)
+                        self._request[rtsp_url] = mp.Value("i", 1)
                         self._process[rtsp_url] = mp.Process(
                             target=receive_image_process,
-                            args=(rtsp_url, self._image_queue[rtsp_url],
-                                  self._request[rtsp_url]),
+                            args=(
+                                rtsp_url,
+                                self._image_queue[rtsp_url],
+                                self._request[rtsp_url],
+                            ),
                         )
                         self._process[rtsp_url].start()
                 else:
@@ -284,7 +316,7 @@ class Node(DpgNodeABC):
 
             dpg.set_item_label(tag_node_button_value_name, self._stop_label)
         elif label == self._stop_label:
-            if rtsp_url != '':
+            if rtsp_url != "":
                 if use_mp:
                     # multiprocessing使用
                     if rtsp_url in self._request:

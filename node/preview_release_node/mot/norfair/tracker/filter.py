@@ -22,7 +22,10 @@ class FilterSetup:
         filter.F[:dim_z, dim_z:] = dt * np.eye(dim_z)
 
         # Measurement function: numpy.array(dim_z, dim_x)
-        filter.H = np.eye(dim_z, dim_x,)
+        filter.H = np.eye(
+            dim_z,
+            dim_x,
+        )
 
         # Measurement uncertainty (sensor noise): numpy.array(dim_z, dim_z)
         filter.R *= self.R

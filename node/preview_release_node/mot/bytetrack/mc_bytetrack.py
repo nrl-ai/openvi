@@ -4,7 +4,9 @@ import copy
 
 import numpy as np
 
-from node.preview_release_node.mot.bytetrack.tracker.byte_tracker import BYTETracker
+from node.preview_release_node.mot.bytetrack.tracker.byte_tracker import (
+    BYTETracker,
+)
 
 
 class dict_dot_notation(dict):
@@ -45,12 +47,14 @@ class MultiClassByteTrack(object):
         for class_id in np.unique(class_ids):
             if not int(class_id) in self.tracker_dict:
                 self.tracker_dict[int(class_id)] = BYTETracker(
-                    args=dict_dot_notation({
-                        'track_thresh': self.track_thresh,
-                        'track_buffer': self.track_buffer,
-                        'match_thresh': self.match_thresh,
-                        'mot20': self.mot20,
-                    }),
+                    args=dict_dot_notation(
+                        {
+                            "track_thresh": self.track_thresh,
+                            "track_buffer": self.track_buffer,
+                            "match_thresh": self.match_thresh,
+                            "mot20": self.mot20,
+                        }
+                    ),
                     frame_rate=self.fps,
                 )
 
@@ -70,8 +74,12 @@ class MultiClassByteTrack(object):
             target_class_ids = np.array(class_ids)[target_index]
 
             # トラッカー用変数に格納
-            detections = [[*b, s, l] for b, s, l in zip(
-                target_bboxes, target_scores, target_class_ids)]
+            detections = [
+                [*b, s, l]
+                for b, s, l in zip(
+                    target_bboxes, target_scores, target_class_ids
+                )
+            ]
             detections = np.array(detections)
 
             # トラッカー更新
@@ -83,7 +91,7 @@ class MultiClassByteTrack(object):
 
             # 結果格納
             for bbox, score, t_id in zip(result[0], result[1], result[2]):
-                t_ids.append(str(int(class_id)) + '_' + str(t_id))
+                t_ids.append(str(int(class_id)) + "_" + str(t_id))
                 t_bboxes.append(bbox)
                 t_scores.append(score)
                 t_class_ids.append(int(class_id))
@@ -91,17 +99,17 @@ class MultiClassByteTrack(object):
         return t_ids, t_bboxes, t_scores, t_class_ids
 
     def _tracker_update(self, tracker, image, detections):
-        image_info = {'id': 0}
-        image_info['image'] = copy.deepcopy(image)
-        image_info['width'] = image.shape[1]
-        image_info['height'] = image.shape[0]
+        image_info = {"id": 0}
+        image_info["image"] = copy.deepcopy(image)
+        image_info["width"] = image.shape[1]
+        image_info["height"] = image.shape[0]
 
         online_targets = []
         if detections is not None and len(detections) != 0:
             online_targets = tracker.update(
                 detections[:, :-1],
-                [image_info['height'], image_info['width']],
-                [image_info['height'], image_info['width']],
+                [image_info["height"], image_info["width"]],
+                [image_info["height"], image_info["width"]],
             )
 
         online_tlwhs = []
@@ -112,9 +120,15 @@ class MultiClassByteTrack(object):
             track_id = online_target.track_id
             if tlwh[2] * tlwh[3] > self.min_box_area:
                 online_tlwhs.append(
-                    np.array([
-                        tlwh[0], tlwh[1], tlwh[0] + tlwh[2], tlwh[1] + tlwh[3]
-                    ]))
+                    np.array(
+                        [
+                            tlwh[0],
+                            tlwh[1],
+                            tlwh[0] + tlwh[2],
+                            tlwh[1] + tlwh[3],
+                        ]
+                    )
+                )
                 online_ids.append(track_id)
                 online_scores.append(online_target.score)
 

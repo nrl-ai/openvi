@@ -5,27 +5,27 @@ import numpy as np
 
 
 def draw_info(node_name, node_result, image):
-    classification_nodes = ['Classification']
-    object_detection_nodes = ['ObjectDetection']
-    semantic_segmentation_nodes = ['SemanticSegmentation']
-    pose_estimation_nodes = ['PoseEstimation']
-    face_detection_nodes = ['FaceDetection']
-    multi_object_tracking_nodes = ['MultiObjectTracking']
-    qr_code_detection_nodes = ['QRCodeDetection']
+    classification_nodes = ["Classification"]
+    object_detection_nodes = ["ObjectDetection"]
+    semantic_segmentation_nodes = ["SemanticSegmentation"]
+    pose_estimation_nodes = ["PoseEstimation"]
+    face_detection_nodes = ["FaceDetection"]
+    multi_object_tracking_nodes = ["MultiObjectTracking"]
+    qr_code_detection_nodes = ["QRCodeDetection"]
 
     debug_image = copy.deepcopy(image)
     if node_name in classification_nodes:
-        use_object_detection = node_result.get('use_object_detection', [])
-        class_ids = node_result.get('class_ids', [])
-        class_scores = node_result.get('class_scores', [])
-        class_names = node_result.get('class_names', [])
+        use_object_detection = node_result.get("use_object_detection", [])
+        class_ids = node_result.get("class_ids", [])
+        class_scores = node_result.get("class_scores", [])
+        class_names = node_result.get("class_names", [])
 
         if use_object_detection:
-            od_bboxes = node_result.get('od_bboxes', [])
-            od_scores = node_result.get('od_scores', [])
-            od_class_ids = node_result.get('od_class_ids', [])
-            od_class_names = node_result.get('od_class_names', [])
-            od_score_th = node_result.get('od_score_th', [])
+            od_bboxes = node_result.get("od_bboxes", [])
+            od_scores = node_result.get("od_scores", [])
+            od_class_ids = node_result.get("od_class_ids", [])
+            od_class_names = node_result.get("od_class_names", [])
+            od_score_th = node_result.get("od_score_th", [])
             debug_image = draw_classification_with_od_info(
                 debug_image,
                 class_ids,
@@ -46,11 +46,11 @@ def draw_info(node_name, node_result, image):
                 class_names,
             )
     elif node_name in object_detection_nodes:
-        bboxes = node_result.get('bboxes', [])
-        scores = node_result.get('scores', [])
-        class_ids = node_result.get('class_ids', [])
-        class_names = node_result.get('class_names', [])
-        score_th = node_result.get('score_th', [])
+        bboxes = node_result.get("bboxes", [])
+        scores = node_result.get("scores", [])
+        class_ids = node_result.get("class_ids", [])
+        class_names = node_result.get("class_names", [])
+        score_th = node_result.get("score_th", [])
         debug_image = draw_object_detection_info(
             debug_image,
             score_th,
@@ -60,9 +60,9 @@ def draw_info(node_name, node_result, image):
             class_names,
         )
     elif node_name in semantic_segmentation_nodes:
-        class_num = node_result.get('class_num', [])
-        segmentation_map = node_result.get('segmentation_map', [])
-        score_th = node_result.get('score_th', [])
+        class_num = node_result.get("class_num", [])
+        segmentation_map = node_result.get("segmentation_map", [])
+        score_th = node_result.get("score_th", [])
         debug_image = draw_semantic_segmentation_info(
             debug_image,
             score_th,
@@ -70,9 +70,9 @@ def draw_info(node_name, node_result, image):
             segmentation_map,
         )
     elif node_name in pose_estimation_nodes:
-        model_name = node_result.get('model_name', [])
-        results_list = node_result.get('results_list', [])
-        score_th = node_result.get('score_th', [])
+        model_name = node_result.get("model_name", [])
+        results_list = node_result.get("results_list", [])
+        score_th = node_result.get("score_th", [])
         debug_image = draw_pose_estimation_info(
             model_name,
             debug_image,
@@ -80,9 +80,9 @@ def draw_info(node_name, node_result, image):
             score_th,
         )
     elif node_name in face_detection_nodes:
-        model_name = node_result.get('model_name', [])
-        results_list = node_result.get('results_list', [])
-        score_th = node_result.get('score_th', [])
+        model_name = node_result.get("model_name", [])
+        results_list = node_result.get("results_list", [])
+        score_th = node_result.get("score_th", [])
         debug_image = draw_face_detection_info(
             model_name,
             debug_image,
@@ -90,12 +90,12 @@ def draw_info(node_name, node_result, image):
             score_th,
         )
     elif node_name in multi_object_tracking_nodes:
-        track_ids = node_result.get('track_ids', [])
-        bboxes = node_result.get('bboxes', [])
-        scores = node_result.get('scores', [])
-        class_ids = node_result.get('class_ids', [])
-        class_names = node_result.get('class_names', [])
-        track_id_dict = node_result.get('track_id_dict', [])
+        track_ids = node_result.get("track_ids", [])
+        bboxes = node_result.get("bboxes", [])
+        scores = node_result.get("scores", [])
+        class_ids = node_result.get("class_ids", [])
+        class_names = node_result.get("class_names", [])
+        track_id_dict = node_result.get("track_id_dict", [])
         debug_image = draw_multi_object_tracking_info(
             debug_image,
             track_ids,
@@ -106,8 +106,8 @@ def draw_info(node_name, node_result, image):
             track_id_dict,
         )
     elif node_name in qr_code_detection_nodes:
-        texts = node_result.get('texts', [])
-        bboxes = node_result.get('bboxes', [])
+        texts = node_result.get("texts", [])
+        bboxes = node_result.get("bboxes", [])
         debug_image = draw_qrcode_detection_info(
             debug_image,
             texts,
@@ -134,15 +134,15 @@ def get_color_map_list(num_classes, custom_color=None):
         j = 0
         lab = i
         while lab:
-            color_map[i * 3 + 2] |= (((lab >> 0) & 1) << (7 - j))
-            color_map[i * 3 + 1] |= (((lab >> 1) & 1) << (7 - j))
-            color_map[i * 3] |= (((lab >> 2) & 1) << (7 - j))
+            color_map[i * 3 + 2] |= ((lab >> 0) & 1) << (7 - j)
+            color_map[i * 3 + 1] |= ((lab >> 1) & 1) << (7 - j)
+            color_map[i * 3] |= ((lab >> 2) & 1) << (7 - j)
             j += 1
             lab >>= 3
     color_map = color_map[3:]
 
     if custom_color:
-        color_map[:len(custom_color)] = custom_color
+        color_map[: len(custom_color)] = custom_color
     return color_map
 
 
@@ -153,11 +153,15 @@ def draw_classification_info(
     class_names,
 ):
     debug_image = copy.deepcopy(image)
-    for index, (class_score,
-                class_id) in enumerate(zip(class_scores, class_ids)):
-        score = '%.2f' % class_score
-        text = '%s:%s(%s)' % (str(class_id), str(
-            class_names[int(class_id)]), score)
+    for index, (class_score, class_id) in enumerate(
+        zip(class_scores, class_ids)
+    ):
+        score = "%.2f" % class_score
+        text = "%s:%s(%s)" % (
+            str(class_id),
+            str(class_names[int(class_id)]),
+            score,
+        )
         debug_image = cv2.putText(
             debug_image,
             text,
@@ -200,9 +204,12 @@ def draw_object_detection_info(
         )
 
         # クラスID、スコア
-        score = '%.2f' % score
-        text = '%s:%s(%s)' % (int(class_id), str(
-            class_names[int(class_id)]), score)
+        score = "%.2f" % score
+        text = "%s:%s(%s)" % (
+            int(class_id),
+            str(class_names[int(class_id)]),
+            score,
+        )
         debug_image = cv2.putText(
             debug_image,
             text,
@@ -231,11 +238,11 @@ def draw_classification_with_od_info(
     debug_image = copy.deepcopy(image)
 
     for class_id, score, od_bbox, od_score, od_class_id in zip(
-            class_id_list,
-            score_list,
-            od_bboxes,
-            od_scores,
-            od_class_ids,
+        class_id_list,
+        score_list,
+        od_bboxes,
+        od_scores,
+        od_class_ids,
     ):
         x1, y1 = int(od_bbox[0]), int(od_bbox[1])
         x2, y2 = int(od_bbox[2]), int(od_bbox[3])
@@ -255,13 +262,15 @@ def draw_classification_with_od_info(
         )
 
         # Object Detection：クラスID、スコア
-        score_text = '%.2f' % od_score
-        text = '%s:%s(%s)' % (int(od_class_id),
-                              str(od_class_names[int(od_class_id)]),
-                              score_text)
+        score_text = "%.2f" % od_score
+        text = "%s:%s(%s)" % (
+            int(od_class_id),
+            str(od_class_names[int(od_class_id)]),
+            score_text,
+        )
         debug_image = cv2.putText(
             debug_image,
-            'Detection(' + text + ')',
+            "Detection(" + text + ")",
             (x1, y1 - 36),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.9,
@@ -270,12 +279,15 @@ def draw_classification_with_od_info(
         )
 
         # Classification：クラスID、スコア
-        score_text = '%.2f' % score
-        text = '%s:%s(%s)' % (int(class_id), str(
-            class_name_dict[int(class_id)]), score_text)
+        score_text = "%.2f" % score
+        text = "%s:%s(%s)" % (
+            int(class_id),
+            str(class_name_dict[int(class_id)]),
+            score_text,
+        )
         debug_image = cv2.putText(
             debug_image,
-            'Classification(' + text + ')',
+            "Classification(" + text + ")",
             (x1, y1 - 12),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.9,
@@ -301,10 +313,13 @@ def draw_semantic_segmentation_info(
 
     for index, mask in enumerate(segmentation_map):
         bg_image = np.zeros(image.shape, dtype=np.uint8)
-        bg_image[:] = (color_map[index * 3 + 0], color_map[index * 3 + 1],
-                       color_map[index * 3 + 2])
+        bg_image[:] = (
+            color_map[index * 3 + 0],
+            color_map[index * 3 + 1],
+            color_map[index * 3 + 2],
+        )
 
-        mask = np.stack((mask, ) * 3, axis=-1).astype('uint8')
+        mask = np.stack((mask,) * 3, axis=-1).astype("uint8")
 
         mask_image = np.where(mask, debug_image, bg_image)
         debug_image = cv2.addWeighted(debug_image, 0.5, mask_image, 0.5, 1.0)
@@ -316,18 +331,18 @@ def draw_pose_estimation_info(model_name, image, results_list, score_th):
     debug_image = copy.deepcopy(image)
 
     move_net_nodes = [
-        'MoveNet(SinglePose Lightning)',
-        'MoveNet(SinglePose Thunder)',
-        'MoveNet(MulitPose Lightning)',
+        "MoveNet(SinglePose Lightning)",
+        "MoveNet(SinglePose Thunder)",
+        "MoveNet(MulitPose Lightning)",
     ]
     mediapipe_hands_nodes = [
-        'MediaPipe Hands(Complexity0)',
-        'MediaPipe Hands(Complexity1)',
+        "MediaPipe Hands(Complexity0)",
+        "MediaPipe Hands(Complexity1)",
     ]
     mediapipe_pose_nodes = [
-        'MediaPipe Pose(Complexity0)',
-        'MediaPipe Pose(Complexity1)',
-        'MediaPipe Pose(Complexity2)',
+        "MediaPipe Pose(Complexity0)",
+        "MediaPipe Pose(Complexity1)",
+        "MediaPipe Pose(Complexity2)",
     ]
 
     if model_name in move_net_nodes:
@@ -385,9 +400,17 @@ def draw_mediapipe_hands_info(image, results_list):
         cv2.line(image, results[13][:2], results[17][:2], (0, 255, 0), 2)
         cv2.line(image, results[17][:2], results[0][:2], (0, 255, 0), 2)
 
-        cx, cy = results['palm_moment']
-        cv2.putText(image, results['label'], (cx - 20, cy),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+        cx, cy = results["palm_moment"]
+        cv2.putText(
+            image,
+            results["label"],
+            (cx - 20, cy),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (0, 255, 0),
+            2,
+            cv2.LINE_AA,
+        )
 
     return image
 
@@ -546,7 +569,7 @@ def draw_movenet_info(image, results_list, score_th):
         if results[14][2] > score_th and results[16][2] > score_th:
             cv2.line(image, results[14][:2], results[16][:2], (0, 255, 0), 2)
 
-        bbox = results.get('bbox', None)
+        bbox = results.get("bbox", None)
         if bbox is not None:
             if bbox[4] > score_th:
                 image = cv2.rectangle(
@@ -563,21 +586,25 @@ def draw_movenet_info(image, results_list, score_th):
 def draw_face_detection_info(model_name, image, results_list, score_th):
     debug_image = copy.deepcopy(image)
 
-    if model_name == 'MediaPipe FaceDetection(~2m)' or \
-            model_name == 'MediaPipe FaceDetection(~5m)':
+    if (
+        model_name == "MediaPipe FaceDetection(~2m)"
+        or model_name == "MediaPipe FaceDetection(~5m)"
+    ):
         debug_image = draw_mediapipe_face_detection_info(
             debug_image,
             results_list,
             score_th,
         )
-    elif model_name == 'MediaPipe FaceMesh' or \
-            model_name == 'MediaPipe FaceMesh(Refine Landmark)':
+    elif (
+        model_name == "MediaPipe FaceMesh"
+        or model_name == "MediaPipe FaceMesh(Refine Landmark)"
+    ):
         debug_image = draw_mediapipe_facemesh_info(
             debug_image,
             results_list,
             score_th,
         )
-    elif model_name == 'YuNet':
+    elif model_name == "YuNet":
         debug_image = draw_yunet_info(
             debug_image,
             results_list,
@@ -597,7 +624,7 @@ def draw_mediapipe_face_detection_info(image, results_list, score_th):
             cv2.circle(image, (landmark_x, landmark_y), 5, (0, 255, 0), -1)
 
         # バウンディングボックス
-        bbox = results.get('bbox', None)
+        bbox = results.get("bbox", None)
         if bbox is not None:
             image = cv2.rectangle(
                 image,
@@ -701,7 +728,7 @@ def draw_yunet_info(image, results_list, score_th):
             cv2.circle(image, (landmark_x, landmark_y), 5, (0, 255, 0), -1)
 
         # バウンディングボックス
-        bbox = results.get('bbox', None)
+        bbox = results.get("bbox", None)
         if bbox is not None:
             image = cv2.rectangle(
                 image,
@@ -738,8 +765,8 @@ def draw_multi_object_tracking_info(
         )
 
         # トラックID、スコア
-        score = '%.2f' % score
-        text = 'TID:%s(%s)' % (str(int(track_id_dict[id])), str(score))
+        score = "%.2f" % score
+        text = "TID:%s(%s)" % (str(int(track_id_dict[id])), str(score))
         image = cv2.putText(
             image,
             text,
@@ -751,7 +778,7 @@ def draw_multi_object_tracking_info(
         )
 
         # クラスID
-        text = 'CID:%s(%s)' % (str(int(class_id)), class_names[int(class_id)])
+        text = "CID:%s(%s)" % (str(int(class_id)), class_names[int(class_id)])
         image = cv2.putText(
             image,
             text,
@@ -772,14 +799,34 @@ def draw_qrcode_detection_info(
 ):
     for text, bbox in zip(texts, bboxes):
         # 各辺
-        cv2.line(image, (bbox[0][0], bbox[0][1]), (bbox[1][0], bbox[1][1]),
-                 (255, 0, 0), 2)
-        cv2.line(image, (bbox[1][0], bbox[1][1]), (bbox[2][0], bbox[2][1]),
-                 (255, 0, 0), 2)
-        cv2.line(image, (bbox[2][0], bbox[2][1]), (bbox[3][0], bbox[3][1]),
-                 (0, 255, 0), 2)
-        cv2.line(image, (bbox[3][0], bbox[3][1]), (bbox[0][0], bbox[0][1]),
-                 (0, 255, 0), 2)
+        cv2.line(
+            image,
+            (bbox[0][0], bbox[0][1]),
+            (bbox[1][0], bbox[1][1]),
+            (255, 0, 0),
+            2,
+        )
+        cv2.line(
+            image,
+            (bbox[1][0], bbox[1][1]),
+            (bbox[2][0], bbox[2][1]),
+            (255, 0, 0),
+            2,
+        )
+        cv2.line(
+            image,
+            (bbox[2][0], bbox[2][1]),
+            (bbox[3][0], bbox[3][1]),
+            (0, 255, 0),
+            2,
+        )
+        cv2.line(
+            image,
+            (bbox[3][0], bbox[3][1]),
+            (bbox[0][0], bbox[0][1]),
+            (0, 255, 0),
+            2,
+        )
 
         # テキスト
         cv2.putText(

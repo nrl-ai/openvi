@@ -2,16 +2,16 @@ from abc import ABCMeta, abstractmethod
 
 
 class DpgNodeABC(metaclass=ABCMeta):
-    _ver = '0.0.0'
+    _ver = "0.0.0"
 
-    node_label = ''
-    node_tag = ''
+    node_label = ""
+    node_tag = ""
 
-    TYPE_INT = 'Int'
-    TYPE_FLOAT = 'Float'
-    TYPE_IMAGE = 'Image'
-    TYPE_TIME_MS = 'TimeMS'
-    TYPE_TEXT = 'Text'
+    TYPE_INT = "Int"
+    TYPE_FLOAT = "Float"
+    TYPE_IMAGE = "Image"
+    TYPE_TIME_MS = "TimeMS"
+    TYPE_TEXT = "Text"
 
     @abstractmethod
     def add_node(
