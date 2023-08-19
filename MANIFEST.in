@@ -1,4 +1,4 @@
-include node_editor/font/YasashisaAntiqueFont/*.otf
-include node_editor/setting/*.json
-include node\deep_learning_node/*/*/*/*.onnx
-include node\deep_learning_node/*/*/*/*/*.onnx
+include openvi/font/Roboto/Roboto-Regular.ttf
+include openvi/node_editor/setting/*.json
+include openvi/node/deep_learning_node/*/*/*/*.onnx
+include openvi/node/deep_learning_node/*/*/*/*/*.onnx
