@@ -90,10 +90,14 @@ class DpgNodeEditor(object):
                 with dpg.theme(tag="theme_editor_group_node"):
                     with dpg.theme_component(dpg.mvButton):
                         dpg.add_theme_color(
-                            dpg.mvThemeCol_Button, [51, 102, 0]
+                            dpg.mvThemeCol_Button, [30, 129, 176]
                         )
                         dpg.add_theme_color(
-                            dpg.mvThemeCol_ButtonHovered, [76, 153, 0]
+                            dpg.mvThemeCol_ButtonHovered, [0, 129, 130]
+                        )
+                        # Font color
+                        dpg.add_theme_color(
+                            dpg.mvThemeCol_Text, [255, 255, 255]
                         )
                         dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5)
                         dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 3, 3)

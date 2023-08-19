@@ -11,6 +11,7 @@ import os
 
 import cv2
 import dearpygui.dearpygui as dpg
+from dearpygui_ext.themes import create_theme_imgui_light
 
 try:
     from .node_editor.util import check_camera_connection
@@ -160,8 +161,7 @@ def main():
     current_path = os.path.dirname(os.path.abspath(__file__))
     with dpg.font_registry():
         with dpg.font(
-            current_path
-            + "/node_editor/font/YasashisaAntiqueFont/07YasashisaAntique.otf",
+            current_path + "/font/Roboto/Roboto-Regular.ttf",
             16,
         ) as default_font:
             dpg.add_font_range_hint(dpg.mvFontRangeHint_Japanese)
@@ -216,7 +216,7 @@ def main():
                     ),
                 )
 
-        # Add tab
+        # Add tabs
         with dpg.tab_bar():
             with dpg.tab(label="Project Management"):
                 with dpg.group(horizontal=True):
@@ -224,17 +224,17 @@ def main():
                     dpg.add_text(
                         "Manage project: Open/Save/Export/Import project"
                     )
-            with dpg.tab(label="Data Import"):
+            with dpg.tab(label="(1) Data Import"):
                 dpg.add_text("Data Import")
-            with dpg.tab(label="Data Preparation"):
+            with dpg.tab(label="(2) Data Preparation"):
                 dpg.add_text("Data Preparation")
-            with dpg.tab(label="AI Training"):
+            with dpg.tab(label="(3) Training"):
                 with dpg.group(horizontal=True):
                     dpg.add_text("Feature place holder:")
                     dpg.add_text(
                         "Manage AI training: Training and manage models"
                     )
-            with dpg.tab(label="Pipeline Builder"):
+            with dpg.tab(label="(4) Inference Pipeline"):
                 node_editor = DpgNodeEditor(
                     height=editor_height,
                     opencv_setting_dict=opencv_setting_dict,
@@ -242,7 +242,7 @@ def main():
                     use_debug_print=use_debug_print,
                     node_dir=current_path + "/node",
                 )
-            with dpg.tab(label="Edge Deployment"):
+            with dpg.tab(label="(5) Edge Deployment"):
                 with dpg.group(horizontal=True):
                     dpg.add_text("Feature place holder:")
                     dpg.add_text(
@@ -250,6 +250,9 @@ def main():
                     )
     dpg.set_primary_window("OpenVI Window", True)
     dpg.show_viewport()
+
+    light_theme = create_theme_imgui_light()
+    dpg.bind_theme(light_theme)
 
     print("**** Start Main Event Loop ********")
     if not unuse_async_draw:
