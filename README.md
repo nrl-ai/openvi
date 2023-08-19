@@ -1,5 +1,7 @@
 # OpenVI - Open Vision Intelligence
 
+![](openvi.drawio.svg)
+
 - Python 3.9
 
 ```bash

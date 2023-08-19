@@ -16,7 +16,6 @@ class DpgNodeEditor(object):
     _ver = '0.0.1'
 
     _node_editor_tag = 'NodeEditor'
-    _node_editor_label = 'Node editor'
 
     _node_id = 0
     _node_instance_list = {}
@@ -33,9 +32,7 @@ class DpgNodeEditor(object):
 
     def __init__(
         self,
-        width=1280,
         height=720,
-        pos=[0, 0],
         opencv_setting_dict=None,
         node_dir='node',
         menu_dict=None,
@@ -86,124 +83,98 @@ class DpgNodeEditor(object):
             dpg.add_file_extension('.json')
             dpg.add_file_extension('', color=(150, 255, 150, 255))
 
-        # ノードエディター ウィンドウ生成
-        with dpg.window(
-                tag=self._node_editor_tag + 'Window',
-                label=self._node_editor_label,
-                width=width,
-                height=height,
-                pos=pos,
-                menubar=True,
-                on_close=self._callback_close_window,
-                no_title_bar=True,
-        ):
-            with dpg.viewport_menu_bar():
-                with dpg.menu(label="OpenVI"):
-                    dpg.add_menu_item(label="Exit", callback=lambda: dpg.stop_dearpygui())
+        with dpg.group(horizontal=True):
+            with dpg.child_window(width=250, autosize_y=True):
+                with dpg.theme(tag="theme_editor_group_node"):
+                    with dpg.theme_component(dpg.mvButton):
+                        dpg.add_theme_color(dpg.mvThemeCol_Button, [51, 102, 0])
+                        dpg.add_theme_color(
+                            dpg.mvThemeCol_ButtonHovered, [76, 153, 0]
+                        )
+                        dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5)
+                        dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 3, 3)
 
-            # Add tab
-            with dpg.tab_bar():
-                with dpg.tab(label='AI Training'):
-                    with dpg.group(horizontal=True):
-                        dpg.add_text('Message:')
-                        dpg.add_text(
-                            'Train new AI models',
-                            id='msg_box',
+                # Export/Importメニュー
+                with dpg.collapsing_header(label='File'):
+                    dpg.add_button(
+                        tag='Menu_File_Export',
+                        label='Export',
+                        callback=self._callback_file_export_menu,
+                        user_data='Menu_File_Export',
+                    )
+                    dpg.add_button(
+                        tag='Menu_File_Import',
+                        label='Import',
+                        callback=self._callback_file_import_menu,
+                        user_data='Menu_File_Import',
+                    )
+                    # Bind theme
+                    dpg.bind_item_theme(
+                        'Menu_File_Export',
+                        "theme_editor_group_node",
+                    )
+                    dpg.bind_item_theme(
+                        'Menu_File_Import',
+                        "theme_editor_group_node",
                     )
 
-                with dpg.tab(label='Inference Graph'):
-                    with dpg.group(horizontal=True):
-                        with dpg.child_window(width=250, autosize_y=True):
-                            with dpg.theme(tag="theme_editor_group_node"):
-                                with dpg.theme_component(dpg.mvButton):
-                                    dpg.add_theme_color(dpg.mvThemeCol_Button, [51, 102, 0])
-                                    dpg.add_theme_color(
-                                        dpg.mvThemeCol_ButtonHovered, [76, 153, 0]
-                                    )
-                                    dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5)
-                                    dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 3, 3)
+                # ノードメニュー生成
+                for menu_info in menu_dict.items():
+                    menu_label = menu_info[0]
+                    with dpg.collapsing_header(label=menu_label):
+                        # ノードのコード格納パス生成
+                        node_sources_path = os.path.join(
+                            node_dir,
+                            menu_info[1],
+                            '*.py',
+                        )
 
-                            # Export/Importメニュー
-                            with dpg.collapsing_header(label='File'):
-                                dpg.add_button(
-                                    tag='Menu_File_Export',
-                                    label='Export',
-                                    callback=self._callback_file_export_menu,
-                                    user_data='Menu_File_Export',
-                                )
-                                dpg.add_button(
-                                    tag='Menu_File_Import',
-                                    label='Import',
-                                    callback=self._callback_file_import_menu,
-                                    user_data='Menu_File_Import',
-                                )
-                                # Bind theme
-                                dpg.bind_item_theme(
-                                    'Menu_File_Export',
-                                    "theme_editor_group_node",
-                                )
-                                dpg.bind_item_theme(
-                                    'Menu_File_Import',
-                                    "theme_editor_group_node",
-                                )
+                        # 指定ディレクトリ内のノードのコード一覧を取得
+                        node_sources = glob(node_sources_path)
+                        for node_source in node_sources:
+                            # 動的インポート用のパスを生成
+                            import_path = os.path.splitext(
+                                os.path.normpath(node_source))[0]
+                            if platform.system() == 'Windows':
+                                import_path = import_path.replace('\\', '.')
+                            else:
+                                import_path = import_path.replace('/', '.')
 
-                            # ノードメニュー生成
-                            for menu_info in menu_dict.items():
-                                menu_label = menu_info[0]
-                                with dpg.collapsing_header(label=menu_label):
-                                    # ノードのコード格納パス生成
-                                    node_sources_path = os.path.join(
-                                        node_dir,
-                                        menu_info[1],
-                                        '*.py',
-                                    )
+                            import_path = import_path.split('.')
+                            import_path = '.'.join(import_path[-3:])
+                            # __init__.pyのみ除外
+                            if import_path.endswith('__init__'):
+                                continue
+                            # モジュールを動的インポート
+                            module = import_module(import_path)
 
-                                    # 指定ディレクトリ内のノードのコード一覧を取得
-                                    node_sources = glob(node_sources_path)
-                                    for node_source in node_sources:
-                                        # 動的インポート用のパスを生成
-                                        import_path = os.path.splitext(
-                                            os.path.normpath(node_source))[0]
-                                        if platform.system() == 'Windows':
-                                            import_path = import_path.replace('\\', '.')
-                                        else:
-                                            import_path = import_path.replace('/', '.')
+                            # ノードインスタンス生成
+                            node = module.Node()
 
-                                        import_path = import_path.split('.')
-                                        import_path = '.'.join(import_path[-3:])
-                                        # __init__.pyのみ除外
-                                        if import_path.endswith('__init__'):
-                                            continue
-                                        # モジュールを動的インポート
-                                        module = import_module(import_path)
+                            # メニューアイテム追加
+                            dpg.add_button(
+                                tag='Menu_' + node.node_tag,
+                                label=node.node_label,
+                                callback=self._callback_add_node,
+                                user_data=node.node_tag,
+                            )
+                            dpg.bind_item_theme(
+                                "Menu_" + node.node_tag,
+                                "theme_editor_group_node"
+                            )
 
-                                        # ノードインスタンス生成
-                                        node = module.Node()
+                            # インスタンスリスト追加
+                            self._node_instance_list[node.node_tag] = node
 
-                                        # メニューアイテム追加
-                                        dpg.add_button(
-                                            tag='Menu_' + node.node_tag,
-                                            label=node.node_label,
-                                            callback=self._callback_add_node,
-                                            user_data=node.node_tag,
-                                        )
-                                        dpg.bind_item_theme(
-                                            "Menu_" + node.node_tag,
-                                            "theme_editor_group_node"
-                                        )
-
-                                        # インスタンスリスト追加
-                                        self._node_instance_list[node.node_tag] = node
-
-                        with dpg.group(horizontal=True):
-                            with dpg.node_editor(
-                                    tag=self._node_editor_tag,
-                                    callback=self._callback_link,
-                                    delink_callback=self._callback_delink,
-                                    minimap=True,
-                                    minimap_location=dpg.mvNodeMiniMap_Location_BottomRight,
-                            ):
-                                pass
+            with dpg.group(horizontal=True):
+                with dpg.node_editor(
+                        tag=self._node_editor_tag,
+                        callback=self._callback_link,
+                        delink_callback=self._callback_delink,
+                        minimap=True,
+                        minimap_location=dpg.mvNodeMiniMap_Location_BottomRight,
+                ):
+                    pass
 
             # インポート制限事項ポップアップ
             with dpg.window(
@@ -236,7 +207,6 @@ class DpgNodeEditor(object):
                     dpg.mvKey_Delete,
                     callback=self._callback_mv_key_del,
                 )
-        dpg.set_primary_window(self._node_editor_tag + 'Window', True)
 
     def get_node_list(self):
         return self._node_list
@@ -345,9 +315,6 @@ class DpgNodeEditor(object):
             print('    self._node_connection_dict : ',
                   self._node_connection_dict)
             print()
-
-    def _callback_close_window(self, sender):
-        dpg.delete_item(sender)
 
     def _sort_node_graph(self, node_list, node_link_list):
         node_id_dict = OrderedDict({})

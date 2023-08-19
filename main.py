@@ -179,15 +179,42 @@ def main():
         'OtherNode': 'other_node',
         'PreviewReleaseNode': 'preview_release_node'
     })
-    # print
-    node_editor = DpgNodeEditor(
-        width=editor_width,
-        height=editor_height,
-        opencv_setting_dict=opencv_setting_dict,
-        menu_dict=menu_dict,
-        use_debug_print=use_debug_print,
-        node_dir=current_path + '/node',
-    )
+
+    # ノードエディター ウィンドウ生成
+    width = 1280
+    height = 720
+    pos = [0, 0]
+    with dpg.window(
+        tag="OpenVI Window",
+        label="OpenVI Window",
+        width=width,
+        height=height,
+        pos=pos,
+        menubar=True,
+        no_title_bar=True,
+    ):
+        with dpg.viewport_menu_bar():
+            with dpg.menu(label="OpenVI"):
+                dpg.add_menu_item(label="Exit", callback=lambda: dpg.stop_dearpygui())
+
+        # Add tab
+        with dpg.tab_bar():
+            with dpg.tab(label='AI Training'):
+                with dpg.group(horizontal=True):
+                    dpg.add_text('Message:')
+                    dpg.add_text(
+                        'Train new AI models',
+                        id='msg_box',
+                )
+            with dpg.tab(label='AI Inference'):
+                node_editor = DpgNodeEditor(
+                    height=editor_height,
+                    opencv_setting_dict=opencv_setting_dict,
+                    menu_dict=menu_dict,
+                    use_debug_print=use_debug_print,
+                    node_dir=current_path + '/node',
+                )
+    dpg.set_primary_window("OpenVI Window", True)
 
     # ビューポート表示
     dpg.show_viewport()
