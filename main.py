@@ -151,7 +151,7 @@ def main():
     dpg.create_context()
     dpg.setup_dearpygui()
     dpg.create_viewport(
-        title="OpenVI - Open Visual Intelligence",
+        title="OpenVI - Open Vision Intelligence",
         width=editor_width,
         height=editor_height,
     )
