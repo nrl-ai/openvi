@@ -1,6 +1,12 @@
-# OpenVI - Open Vision Intelligence
+# OpenVI - Open toolkit for Computer Vision
 
-![](openvi.drawio.svg)
+This project aims to create a toolkit for computer vision, with image processing and computer vision training with no code. The main features are:
+
+- Image processing graph: Everyone can create image processing graphs with OpenCV. Try the result in real time.
+- Training machine learning models for object detection, image classification, and other computer vision tasks.
+- Deploy machine learning models to devices.
+
+![OpenVI](openvi.png)
 
 - Python 3.9
 
@@ -12,11 +18,11 @@ pip install -r requirements.txt
 ## Run
 
 ```bash
-python main.py
+python openvi/main.py
 ```
 
 ## References
 
 We used some code from the following repositories:
 
-- [Image-Processing-Node-Editor](https://github.com/Kazuhito00/Image-Processing-Node-Editor).
+- Image processing graph: [Image-Processing-Node-Editor](https://github.com/Kazuhito00/Image-Processing-Node-Editor) - License: Apache 2.0.
