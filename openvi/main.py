@@ -353,13 +353,7 @@ def main():
                     dpg.add_text("Please create or open project.")
 
             with dpg.tab_bar(tag="Main Tab Bar"):
-                with dpg.tab(label="Training", show=True):
-                    with dpg.group(horizontal=True):
-                        dpg.add_text("Feature place holder:")
-                        dpg.add_text(
-                            "Manage AI training: Training and manage models"
-                        )
-                with dpg.tab(label="Inference Pipeline", show=True):
+                with dpg.tab(label="CV Pipeline", show=True):
                     node_editor = DpgNodeEditor(
                         height=editor_height,
                         opencv_setting_dict=opencv_setting_dict,
@@ -367,7 +361,13 @@ def main():
                         use_debug_print=use_debug_print,
                         node_dir=current_path + "/node",
                     )
-                with dpg.tab(label="Edge Deployment", show=True):
+                with dpg.tab(label="Model Studio", show=True):
+                    with dpg.group(horizontal=True):
+                        dpg.add_text("Feature place holder:")
+                        dpg.add_text(
+                            "Manage AI training: Training and manage models"
+                        )
+                with dpg.tab(label="Deployment", show=True):
                     with dpg.group(horizontal=True):
                         dpg.add_text("Feature place holder:")
                         dpg.add_text(
