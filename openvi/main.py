@@ -8,6 +8,7 @@ import argparse
 from collections import OrderedDict
 import webbrowser
 import os
+import pathlib
 
 sys.path.append(".")
 
@@ -96,6 +97,26 @@ def update_node_info(
         node_result_dict[node_id_name] = copy.deepcopy(result)
 
 
+def show_info(title, message, selection_callback=None):
+    if selection_callback is None:
+        # Close modal
+        def selection_callback(sender, app_data, user_data):
+            modal_id, is_ok = user_data
+            dpg.configure_item(modal_id, show=False)
+    with dpg.mutex():
+        viewport_width = dpg.get_viewport_client_width()
+        viewport_height = dpg.get_viewport_client_height()
+        with dpg.window(label=title, modal=True, no_close=True) as modal_id:
+            dpg.add_text(message)
+            dpg.add_button(label="Ok", width=75, user_data=(modal_id, True), callback=selection_callback)
+            dpg.group(horizontal=True)
+            dpg.add_button(label="Cancel", width=75, user_data=(modal_id, False), callback=selection_callback)
+    dpg.split_frame()
+    width = dpg.get_item_width(modal_id)
+    height = dpg.get_item_height(modal_id)
+    dpg.set_item_pos(modal_id, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])
+
+
 def main():
     args = get_args()
     setting = args.setting
@@ -134,7 +155,6 @@ def main():
     use_serial = opencv_setting_dict["use_serial"]
     if use_serial:
         import serial
-
         try:
             from .node_editor.util import check_serial_connection
         except:
@@ -217,14 +237,97 @@ def main():
                     ),
                 )
 
-        def open_project():
-            global_data.project_path = True
+        def open_project_from_path(project_path):
+            # Check project file
+            project_file_path = os.path.join(project_path, "project.json")
+            if not os.path.exists(project_file_path):
+                show_info("Error", "Project file not found.")
+                return
+            # Load project file
+            with open(project_file_path) as fp:
+                project_dict = json.load(fp)
+            project_name = project_dict["project_name"]
+            project_description = project_dict["project_description"]
+            # Set project information
+            dpg.set_value("project_name", project_name)
+            dpg.set_value("project_description", project_description)
+            global_data.project_path = project_path
             print("**** Open Project ********")
             dpg.configure_item("No Project Opened", show=False)
             dpg.configure_item("Main Tab Bar", show=True)
 
+        def new_project_from_path(project_path):
+            if global_data.project_path:
+                print("**** Project already opened ********")
+                return
+            if not project_path:
+                print("**** Project path is None ********")
+                print(project_path)
+                return
+            project_name = dpg.get_value("project_name")
+            project_description = dpg.get_value("project_description")
+            if not project_name or not project_description:
+                show_info("Error", "Please input project name and description.")
+                return
+            # Create project directory
+            if os.path.exists(os.path.join(project_path, "project.json")):
+                open_project_from_path(project_path)
+            pathlib.Path(project_path).mkdir(parents=True, exist_ok=True)
+            # Create project file
+            project_file_path = os.path.join(project_path, "project.json")
+            project_dict = {
+                "project_name": project_name,
+                "project_description": project_description,
+            }
+            with open(project_file_path, "w") as fp:
+                json.dump(project_dict, fp)
+            global_data.project_path = project_path
+
+        def new_project():
+            if global_data.project_path:
+                print("**** Project already opened ********")
+                return
+            project_name = dpg.get_value("project_name")
+            project_description = dpg.get_value("project_description")
+            if not project_name or not project_description:
+                show_info("Error", "Please input project name and description.")
+                return
+            # Select project path
+            with dpg.file_dialog(
+                label="Select Project Path",
+                default_path="./",
+                file_count=0,
+                directory_selector=True,
+                show=True,
+                modal=True,
+                width=500,
+                height=500,
+                callback=lambda _, user_data: new_project_from_path(user_data.get("file_path_name")),
+            ):
+                pass
+
+        def open_project():
+            if global_data.project_path:
+                show_info("Error", "Project already opened.")
+                return
+            # Select project path
+            with dpg.file_dialog(
+                label="Select Project Path",
+                default_path="./",
+                file_count=0,
+                directory_selector=True,
+                show=True,
+                modal=True,
+                width=500,
+                height=500,
+                callback=lambda _, user_data: open_project_from_path(user_data.get("file_path_name")),
+            ):
+                pass
+
         def close_project():
             global_data.project_path = None
+            dpg.set_value("project_name", "")
+            dpg.set_value("project_description", "")
             print("**** Close Project ********")
             dpg.configure_item("No Project Opened", show=True)
             dpg.configure_item("Main Tab Bar", show=False)
@@ -235,12 +338,12 @@ def main():
                 # Show project information
                 with dpg.group(horizontal=False):
                     dpg.add_text("Project Name:")
-                    dpg.add_input_text(width=230)
+                    dpg.add_input_text(width=230, tag="project_name")
                     dpg.add_text("Description:")
-                    dpg.add_input_text(width=230, multiline=True, height=100)
+                    dpg.add_input_text(width=230, multiline=True, height=100, tag="project_description")
                 # Show project operation
                 with dpg.group(horizontal=False):
-                    dpg.add_button(label="New Project", width=230)
+                    dpg.add_button(label="New Project", callback=new_project, width=230)
                     dpg.add_button(label="Open Project", callback=open_project, width=230)
                     dpg.add_button(label="Close Project", callback=close_project, width=230)
 
@@ -250,10 +353,6 @@ def main():
                     dpg.add_text("Please create or open project.")
 
             with dpg.tab_bar(tag="Main Tab Bar"):
-                with dpg.tab(label="Data Import", show=True):
-                    dpg.add_text("Data Import")
-                with dpg.tab(label="Data Preparation", show=True):
-                    dpg.add_text("Data Preparation")
                 with dpg.tab(label="Training", show=True):
                     with dpg.group(horizontal=True):
                         dpg.add_text("Feature place holder:")
@@ -277,6 +376,7 @@ def main():
 
     dpg.set_primary_window("OpenVI Window", True)
     dpg.show_viewport()
+    dpg.maximize_viewport()
 
     light_theme = create_theme_imgui_light()
     dpg.bind_theme(light_theme)
