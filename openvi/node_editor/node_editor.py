@@ -3,6 +3,7 @@
 import os
 import copy
 import json
+import pathlib
 import platform
 import datetime
 from glob import glob
@@ -38,6 +39,8 @@ class DpgNodeEditor(object):
         menu_dict=None,
         use_debug_print=False,
     ):
+        self.data_file = None
+
         # 各種初期化
         self._node_id = 0
         self._node_instance_list = {}
@@ -101,6 +104,14 @@ class DpgNodeEditor(object):
                         )
                         dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5)
                         dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 3, 3)
+
+                dpg.add_button(
+                    tag="Save_Graph",
+                    label="Save Graph",
+                    callback=self._save_to_data_file,
+                    user_data="Save_Graph",
+                    width=250
+                )
 
                 # Export/Importメニュー
                 with dpg.collapsing_header(label="File"):
@@ -218,6 +229,21 @@ class DpgNodeEditor(object):
                     callback=self._callback_mv_key_del,
                 )
 
+    def set_data_file(self, data_file):
+        self.data_file = data_file
+        if self.data_file and os.path.exists(self.data_file):
+            print("Loading graph from: ", data_file)
+            with open(self.data_file, "r") as f:
+                data = json.load(f)
+                self._load_from_json(data)
+
+    def _save_to_data_file(self):
+        if self.data_file:
+            pathlib.Path(self.data_file).parent.mkdir(parents=True, exist_ok=True)
+            data = self._get_graph_as_json()
+            with open(self.data_file, "w") as f:
+                json.dump(data, f)
+
     def get_node_list(self):
         return self._node_list
 
@@ -289,6 +315,9 @@ class DpgNodeEditor(object):
             self._node_list,
             self._node_link_list,
         )
+
+        # Save nodes
+        self._save_to_data_file()
 
         if self._use_debug_print:
             print("**** _callback_link ****")
@@ -404,9 +433,12 @@ class DpgNodeEditor(object):
         for unfinded_value in unfinded_id_dict.values():
             node_connection_list.insert(0, (unfinded_value, []))
 
+        # Save nodes
+        self._save_to_data_file()
+
         return OrderedDict(node_connection_list)
 
-    def _callback_file_export(self, sender, data):
+    def _get_graph_as_json(self):
         setting_dict = {}
 
         # ノードリスト、接続リスト保存
@@ -417,15 +449,16 @@ class DpgNodeEditor(object):
         for node_id_name in self._node_list:
             node_id, node_name = node_id_name.split(":")
             node = self._node_instance_list[node_name]
-
             setting = node.get_setting_dict(node_id)
-
             setting_dict[node_id_name] = {
                 "id": str(node_id),
                 "name": str(node_name),
                 "setting": setting,
             }
+        return setting_dict
 
+    def _callback_file_export(self, sender, data):
+        setting_dict = self._get_graph_as_json()
         # JSONファイルへ書き出し
         with open(data["file_path_name"], "w") as fp:
             json.dump(setting_dict, fp, indent=4)
@@ -446,75 +479,69 @@ class DpgNodeEditor(object):
         else:
             dpg.configure_item("modal_file_import", show=True)
 
+    def _load_from_json(self, setting_dict):
+        # 各ノードの設定値復元
+        for node_id_name in setting_dict["node_list"]:
+            node_id, node_name = node_id_name.split(":")
+            node = self._node_instance_list[node_name]
+
+            node_id = int(node_id)
+
+            if node_id > self._node_id:
+                self._node_id = node_id
+
+            # ノードインスタンス取得
+            node = self._node_instance_list[node_name]
+
+            # バージョン警告
+            ver = setting_dict[node_id_name]["setting"]["ver"]
+            if ver != node._ver:
+                warning_node_name = setting_dict[node_id_name]["name"]
+                print("WARNING : " + warning_node_name, end="")
+                print(" is different version")
+                print("                     Load Version ->" + ver)
+                print("                     Code Version ->" + node._ver)
+                print()
+
+            # ノードエディターにノードを追加
+            pos = setting_dict[node_id_name]["setting"]["pos"]
+            node.add_node(
+                self._node_editor_tag,
+                node_id,
+                pos=pos,
+                opencv_setting_dict=self._opencv_setting_dict,
+            )
+
+            # 設定値復元
+            node.set_setting_dict(
+                node_id,
+                setting_dict[node_id_name]["setting"],
+            )
+
+        # ノードリスト、接続リスト復元
+        self._node_list = setting_dict["node_list"]
+        self._node_link_list = setting_dict["link_list"]
+
+        # ノード接続復元
+        for node_link in self._node_link_list:
+            dpg.add_node_link(
+                node_link[0],
+                node_link[1],
+                parent=self._node_editor_tag,
+            )
+
+        # ノードグラフ再生成
+        self._node_connection_dict = self._sort_node_graph(
+            self._node_list,
+            self._node_link_list,
+        )
+
     def _callback_file_import(self, sender, data):
         if data["file_name"] != ".":
-            # JSONファイルから読み込み
             setting_dict = None
             with open(data["file_path_name"]) as fp:
                 setting_dict = json.load(fp)
-
-            # 各ノードの設定値復元
-            for node_id_name in setting_dict["node_list"]:
-                node_id, node_name = node_id_name.split(":")
-                node = self._node_instance_list[node_name]
-
-                node_id = int(node_id)
-
-                if node_id > self._node_id:
-                    self._node_id = node_id
-
-                # ノードインスタンス取得
-                node = self._node_instance_list[node_name]
-
-                # バージョン警告
-                ver = setting_dict[node_id_name]["setting"]["ver"]
-                if ver != node._ver:
-                    warning_node_name = setting_dict[node_id_name]["name"]
-                    print("WARNING : " + warning_node_name, end="")
-                    print(" is different version")
-                    print("                     Load Version ->" + ver)
-                    print("                     Code Version ->" + node._ver)
-                    print()
-
-                # ノードエディターにノードを追加
-                pos = setting_dict[node_id_name]["setting"]["pos"]
-                node.add_node(
-                    self._node_editor_tag,
-                    node_id,
-                    pos=pos,
-                    opencv_setting_dict=self._opencv_setting_dict,
-                )
-
-                # 設定値復元
-                node.set_setting_dict(
-                    node_id,
-                    setting_dict[node_id_name]["setting"],
-                )
-
-            # ノードリスト、接続リスト復元
-            self._node_list = setting_dict["node_list"]
-            self._node_link_list = setting_dict["link_list"]
-
-            # ノード接続復元
-            for node_link in self._node_link_list:
-                dpg.add_node_link(
-                    node_link[0],
-                    node_link[1],
-                    parent=self._node_editor_tag,
-                )
-
-            # ノードグラフ再生成
-            self._node_connection_dict = self._sort_node_graph(
-                self._node_list,
-                self._node_link_list,
-            )
-
-        if self._use_debug_print:
-            print("**** _callback_file_import ****")
-            print("    sender          : " + str(sender))
-            print("    data            : " + str(data))
-            print("    setting_dict    : ", setting_dict)
-            print()
+            self._load_from_json(setting_dict)
 
     def _callback_save_last_pos(self):
         if len(dpg.get_selected_nodes(self._node_editor_tag)) > 0:

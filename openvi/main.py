@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import copy
+import uuid
 import json
 import asyncio
 import argparse
@@ -249,12 +250,13 @@ def main():
             project_name = project_dict["project_name"]
             project_description = project_dict["project_description"]
             # Set project information
-            dpg.set_value("project_name", project_name)
-            dpg.set_value("project_description", project_description)
-            global_data.project_path = project_path
-            print("**** Open Project ********")
             dpg.configure_item("No Project Opened", show=False)
             dpg.configure_item("Main Tab Bar", show=True)
+            dpg.set_value("project_name", project_name)
+            dpg.set_value("project_description", project_description)
+            global_data.node_editor.set_data_file(os.path.join(project_path, "nodes.json"))
+            global_data.project_path = project_path
+            print("**** Open Project ********")
 
         def new_project_from_path(project_path):
             if global_data.project_path:
@@ -353,26 +355,97 @@ def main():
                     dpg.add_text("Please create or open project.")
 
             with dpg.tab_bar(tag="Main Tab Bar"):
-                with dpg.tab(label="CV Pipeline", show=True):
-                    node_editor = DpgNodeEditor(
+                with dpg.tab(label="Pipeline Builder", show=True):
+                    global_data.node_editor = DpgNodeEditor(
                         height=editor_height,
                         opencv_setting_dict=opencv_setting_dict,
                         menu_dict=menu_dict,
                         use_debug_print=use_debug_print,
                         node_dir=current_path + "/node",
                     )
-                with dpg.tab(label="Model Studio", show=True):
+                with dpg.tab(label="AI AutoTrain", show=True):
                     with dpg.group(horizontal=True):
-                        dpg.add_text("Feature place holder:")
-                        dpg.add_text(
-                            "Manage AI training: Training and manage models"
-                        )
+                        with dpg.group(horizontal=False):
+                            dpg.add_text("AI AutoTrain - No-code Trainer for Computer Vision")
+                            dpg.add_text("Training name")
+                            dpg.add_input_text(width=500, tag="training_name")
+                            dpg.set_value("training_name", uuid.uuid4().hex)
+                            # Model selection
+                            dpg.add_text("Model")
+                            dpg.add_combo(
+                                items=["Object Detection", "Image Classification"],
+                                default_value="Object Detection",
+                                width=500,
+                                tag="model",
+                            )
+                            # Dataset input: Robotflow API Key, Roboflow Workspace, Roboflow Project, Roboflow Version
+                            dpg.add_text("Dataset")
+                            with dpg.group(horizontal=True):
+                                with dpg.group(horizontal=False):
+                                    dpg.add_text("Robotflow API Key")
+                                    dpg.add_text("Robotflow Workspace")
+                                    dpg.add_text("Robotflow Project")
+                                    dpg.add_text("Robotflow Version")
+                                with dpg.group(horizontal=False):
+                                    dpg.add_input_text(width=300, tag="robotflow_api_key")
+                                    dpg.add_input_text(width=300, tag="robotflow_workspace")
+                                    dpg.add_input_text(width=300, tag="robotflow_project")
+                                    dpg.add_input_text(width=300, tag="robotflow_version")
+                            # Training input: Epoch, Batch size, Learning rate, Image size, Augmentation
+                            dpg.add_text("Training")
+                            with dpg.group(horizontal=True):
+                                with dpg.group(horizontal=False):
+                                    dpg.add_text("Epoch")
+                                    dpg.add_text("Batch size")
+                                    dpg.add_text("Learning rate")
+                                    dpg.add_text("Image size")
+                                    dpg.add_text("Augmentation")
+                                with dpg.group(horizontal=False):
+                                    dpg.add_input_int(width=300, tag="epoch", default_value=100)
+                                    dpg.add_input_int(width=300, tag="batch_size", default_value=16)
+                                    dpg.add_input_float(width=300, tag="learning_rate", default_value=0.001)
+                                    dpg.add_input_int(width=300, tag="image_size", default_value=640)
+                            # Training buttons
+                            with dpg.group(horizontal=True):
+                                dpg.add_button(label="Start Training", width=200, height=100)
+                                dpg.add_button(label="Stop Training", width=200, height=100)
+                                dpg.add_spacer()
+                            # Training log
+                            dpg.add_text("Training log")
+                            dpg.add_input_text(width=500, multiline=True, height=300, tag="training_log")
+                        with dpg.group(horizontal=False):
+                            dpg.add_text("Trained models table")
+                            with dpg.group(horizontal=True):
+                                dpg.add_button(label="Refresh", width=200)
+                                dpg.add_button(label="Delete", width=200)
+                            with dpg.table(header_row=True):
+                                dpg.add_table_column(label="Training name")
+                                dpg.add_table_column(label="Dataset")
+                                dpg.add_table_column(label="Model")
+                                dpg.add_table_column(label="Epoch")
+                                dpg.add_table_column(label="Batch size")
+                                dpg.add_table_column(label="Learning rate")
+                                dpg.add_table_column(label="Image size")
+                                dpg.add_table_column(label="Accuracy")
                 with dpg.tab(label="Deployment", show=True):
                     with dpg.group(horizontal=True):
-                        dpg.add_text("Feature place holder:")
-                        dpg.add_text(
-                            "Manage edge device: Deploy models to edge device"
-                        )
+                        # SSH information to deployment device
+                        with dpg.group(horizontal=False):
+                            dpg.add_text("SSH information")
+                            dpg.add_text("IP address")
+                            dpg.add_input_text(width=500, tag="ip_address")
+                            dpg.add_text("Username")
+                            dpg.add_input_text(width=500, tag="username")
+                            dpg.add_text("Password")
+                            dpg.add_input_text(width=500, tag="password")
+                            # Add space
+                            dpg.add_text("")
+                            with dpg.group(horizontal=True):
+                                dpg.add_button(label="Deploy", width=200, height=100)
+                                dpg.add_button(label="Try connection", width=200, height=100)
+                        with dpg.group(horizontal=False):
+                            dpg.add_text("Logs")
+                            dpg.add_input_text(width=500, multiline=True, height=300, tag="deployment_log")
 
     dpg.set_primary_window("OpenVI Window", True)
     dpg.show_viewport()
@@ -384,14 +457,14 @@ def main():
     print("**** Start Main Event Loop ********")
     if not unuse_async_draw:
         event_loop = asyncio.get_event_loop()
-        event_loop.run_in_executor(None, async_main, node_editor)
+        event_loop.run_in_executor(None, async_main, global_data.node_editor)
         dpg.start_dearpygui()
     else:
         node_image_dict = {}
         node_result_dict = {}
         while dpg.is_dearpygui_running():
             update_node_info(
-                node_editor,
+                global_data.node_editor,
                 node_image_dict,
                 node_result_dict,
                 mode_async=False,
@@ -400,16 +473,16 @@ def main():
 
     print("**** Terminate process ********")
     print("**** Close All Node ********")
-    node_list = node_editor.get_node_list()
+    node_list = global_data.node_editor.get_node_list()
     for node_id_name in node_list:
         node_id, node_name = node_id_name.split(":")
-        node_instance = node_editor.get_node_instance(node_name)
+        node_instance = global_data.node_editor.get_node_instance(node_name)
         node_instance.close(node_id)
     print("**** Release All VideoCapture ********")
     for camera_capture in camera_capture_list:
         camera_capture.release()
     print("**** Stop Event Loop ********")
-    node_editor.set_terminate_flag()
+    global_data.node_editor.set_terminate_flag()
     event_loop.stop()
     print("**** Destroy DearPyGui Context ********")
     dpg.destroy_context()

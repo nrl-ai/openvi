@@ -51,7 +51,7 @@ setup(
         "Cython==0.29.30",
         "opencv-contrib-python==4.5.5.64",
         "onnxruntime==1.12.0",
-        "dearpygui==1.6.2",
+        "dearpygui==1.10.0",
         "mediapipe==0.10.3",
         "protobuf==3.20.0",
         "filterpy==1.4.5",
