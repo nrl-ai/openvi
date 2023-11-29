@@ -34,7 +34,7 @@ class AutoTrainer():
                 dpg.add_text("Select dataset folder")
             with dpg.group(horizontal=False):
                 dpg.add_input_text(width=260, tag="dataset_folder")
-                dpg.set_value("dataset_folder", "/home/vietanhdev/Workspaces/openvi/image-classification/dataset/mvtec")
+                dpg.set_value("dataset_folder", "./dataset/mvtec")
                 dpg.add_button(label="Browse", callback=self.browse_dataset_folder)
         # Training input: Epoch, Batch size, Learning rate, Image size, Augmentation
         dpg.add_text("Training")
