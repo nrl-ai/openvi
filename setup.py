@@ -35,7 +35,7 @@ setup(
     name="openvi",
     packages=find_packages(),
     py_modules=[splitext(basename(path))[0] for path in glob("./*")],
-    package_data={"node_editor": extra_py_files},
+    package_data={"openvi": extra_py_files},
     include_package_data=True,
     version=get_version(),
     author="OpenVI Team",
@@ -43,7 +43,7 @@ setup(
     description="No-code platform for computer vision",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    keywords="opencv node-editor onnx onnxruntime dearpygui",
+    keywords="opencv, deep learning, machine learning, computer vision, image processing, video processing, video analysis, video analytics, video",
     license="Apache-2.0 license",
     python_requires=">=3.7",
     install_requires=[
@@ -58,6 +58,10 @@ setup(
         "lap==0.4.0",
         "cython-bbox==0.1.3",
         "rich==12.4.4",
+        "packaging==21.3",
+        "protobuf==3.20.0",
+        "sympy==1.8",
+        "dearpygui_ext==0.9.5"
     ],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",

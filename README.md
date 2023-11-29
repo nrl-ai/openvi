@@ -11,6 +11,7 @@ This project aims to create a toolkit for computer vision, with image processing
 - Python 3.9
 
 ```bash
+
 pip install Cython numpy==1.23.0
 pip install -e .
 ```
