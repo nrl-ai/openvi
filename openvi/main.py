@@ -18,8 +18,6 @@ import dearpygui.dearpygui as dpg
 from dearpygui_ext.themes import create_theme_imgui_light
 
 import openvi.global_data as global_data
-
-
 from openvi.node_editor.util import check_camera_connection
 from openvi.node_editor.node_editor import DpgNodeEditor
 from openvi.auto_trainer import AutoTrainer

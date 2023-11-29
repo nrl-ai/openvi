@@ -50,7 +50,7 @@ setup(
         "numpy>=1.23.0",
         "Cython==0.29.30",
         "opencv-contrib-python==4.5.5.64",
-        "onnxruntime==1.12.0",
+        "onnxruntime==1.16.3",
         "dearpygui==1.10.0",
         "mediapipe==0.10.3",
         "protobuf==3.20.0",

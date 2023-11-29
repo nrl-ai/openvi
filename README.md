@@ -12,13 +12,13 @@ This project aims to create a toolkit for computer vision, with image processing
 
 ```bash
 pip install Cython numpy==1.23.0
-pip install -r requirements.txt
+pip install -e .
 ```
 
 ## Run
 
 ```bash
-python openvi/main.py
+python -m openvi.main
 ```
 
 ## References
