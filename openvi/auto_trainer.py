@@ -90,7 +90,12 @@ class AutoTrainer():
 
     def stop_training(self, sender, app_data, user_data):
         dpg.set_value("training_log", "Stopping training...")
+        self.training_process.terminate()
+        self.training_process = None
+        self.is_training = False
+        dpg.set_value("training_log", "")
         dpg.set_item_label("start_stop_training", "Start Training")
+        dpg.set_value("training_log", "Training stopped.")
 
     def start_training(self):
         if self.is_training:
@@ -107,18 +112,6 @@ class AutoTrainer():
 
     def training_process_func(self):
         data_folder = dpg.get_value("dataset_folder")
-        if not os.path.exists(data_folder):
-            dpg.set_value("training_log", "Dataset folder does not exist.")
-            self.is_training = False
-            return
-        if not os.path.exists(f"{data_folder}/train"):
-            dpg.set_value("training_log", "Train folder does not exist.")
-            self.is_training = False
-            return
-        if not os.path.exists(f"{data_folder}/val"):
-            dpg.set_value("training_log", "Val folder does not exist.")
-            self.is_training = False
-            return
         num_classes = len(os.listdir(f"{data_folder}/train"))
         self.current_training_path = pathlib.Path(self.project_path) / "training" / uuid.uuid4().hex
         if not os.path.exists(self.current_training_path):
@@ -239,4 +232,17 @@ class AutoTrainer():
             if image_size < 1:
                 dpg.set_value("training_log", "Image size must be greater than 0.")
                 return False
+        data_folder = dpg.get_value("dataset_folder")
+        if not os.path.exists(data_folder):
+            dpg.set_value("training_log", "Dataset folder does not exist.")
+            self.is_training = False
+            return False
+        if not os.path.exists(f"{data_folder}/train"):
+            dpg.set_value("training_log", "Train folder does not exist.")
+            self.is_training = False
+            return False
+        if not os.path.exists(f"{data_folder}/val"):
+            dpg.set_value("training_log", "Val folder does not exist.")
+            self.is_training = False
+            return False
         return True
