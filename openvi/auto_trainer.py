@@ -232,6 +232,7 @@ class AutoTrainer():
         rc = self.training_process.poll()
         self.is_training = False
         self.training_process = None
+        dpg.set_item_label("start_stop_training", "Start Training")
         return rc
 
     def validate_fields(self):
