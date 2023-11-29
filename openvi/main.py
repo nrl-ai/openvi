@@ -256,7 +256,8 @@ def main():
             dpg.set_value("project_name", project_name)
             dpg.set_value("project_description", project_description)
             global_data.node_editor.set_data_file(os.path.join(project_path, "nodes.json"))
-            global_data.auto_trainer.project_path = project_path
+            global_data.auto_trainer.set_project_path(project_path)
+            global_data.model_table.set_project_path(project_path)
             global_data.project_path = project_path
             print("**** Open Project ********")
 

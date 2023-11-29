@@ -5,6 +5,7 @@ import os
 import json
 import pathlib
 import time
+import shutil
 
 import dearpygui.dearpygui as dpg
 
@@ -23,8 +24,8 @@ class AutoTrainer():
         dpg.set_value("training_name", uuid.uuid4().hex)
         dpg.add_text("Model")
         dpg.add_combo(
-            items=["Object Detection", "Image Classification"],
-            default_value="Object Detection",
+            items=["Image Classification"],
+            default_value="Image Classification",
             width=500,
             tag="model",
         )
@@ -34,7 +35,7 @@ class AutoTrainer():
                 dpg.add_text("Select dataset folder")
             with dpg.group(horizontal=False):
                 dpg.add_input_text(width=260, tag="dataset_folder")
-                dpg.set_value("dataset_folder", "./dataset/mvtec")
+                dpg.set_value("dataset_folder", "/home/vietanhdev/Workspaces/openvi/image-classification/dataset/mvtec")
                 dpg.add_button(label="Browse", callback=self.browse_dataset_folder)
         # Training input: Epoch, Batch size, Learning rate, Image size, Augmentation
         dpg.add_text("Training")
@@ -46,7 +47,7 @@ class AutoTrainer():
                 dpg.add_text("Image size")
                 dpg.add_text("Augmentation")
             with dpg.group(horizontal=False):
-                dpg.add_input_int(width=300, tag="epoch", default_value=5)
+                dpg.add_input_int(width=300, tag="epoch", default_value=1)
                 dpg.add_input_int(width=300, tag="batch_size", default_value=8)
                 dpg.add_input_float(width=300, tag="learning_rate", default_value=0.001)
                 dpg.add_input_int(width=300, tag="image_size", default_value=224)
@@ -68,7 +69,6 @@ class AutoTrainer():
 
     def set_project_path(self, project_path):
         self.project_path = project_path
-        self.log_path = pathlib.Path(self.project_path) / "training" / "log"
 
     def set_dataset_folder(self, user_data):
         dpg.set_value("dataset_folder", user_data["file_path_name"])
@@ -109,6 +109,20 @@ class AutoTrainer():
             self.is_training = True
             self.training_thread = threading.Thread(target=self.training_process_func)
             self.training_thread.start()
+
+    def get_next_model_name(self):
+        models_path = pathlib.Path(self.project_path) / "models"
+        if not os.path.exists(models_path):
+            pathlib.Path(models_path).mkdir(parents=True, exist_ok=True)
+        # Model name format: 000001, 000002, ...
+        model_names = []
+        for model_name in os.listdir(models_path):
+            if model_name.isdigit():
+                model_names.append(int(model_name))
+        model_names.sort()
+        if len(model_names) == 0:
+            return "000001"
+        return f"{model_names[-1] + 1:06}"
 
     def training_process_func(self):
         data_folder = dpg.get_value("dataset_folder")
@@ -155,9 +169,12 @@ class AutoTrainer():
             stderr=subprocess.STDOUT,
         )
         while True:
-            output = self.training_process.stdout.readline()
-            if output == "" and self.training_process.poll() is not None:
+            # Check if training process is still running
+            rc = self.training_process.poll()
+            if rc is not None:
                 break
+            # Read output
+            output = self.training_process.stdout.readline()
             if output:
                 current_log = dpg.get_value("training_log")
                 current_log = current_log[-10000:]
@@ -180,7 +197,41 @@ class AutoTrainer():
                         dpg.fit_axis_data("accuracy_chart_y_axis")
                 else:
                     dpg.set_value("accuracy_chart_series", [[], []])
+
+        # Finish training
+        # Copy model to models folder
+        model_name = self.get_next_model_name()
+        models_path = pathlib.Path(self.project_path) / "models"
+        if not os.path.exists(models_path):
+            pathlib.Path(models_path).mkdir(parents=True, exist_ok=True)
+        model_path = models_path / model_name
+        if not os.path.exists(model_path):
+            pathlib.Path(model_path).mkdir(parents=True, exist_ok=True)
+
+        # Copy all files in current training path to model path
+        for file_name in os.listdir(self.current_training_path):
+            shutil.copyfile(self.current_training_path / file_name, model_path / file_name)
+        # Write metadata.json
+        with open(model_path / "metadata.json", "w") as f:
+            metadata = {
+                "created_time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "name": model_name,
+                "num_classes": num_classes,
+                "image_size": dpg.get_value("image_size"),
+                "epoch": dpg.get_value("epoch"),
+                "batch_size": dpg.get_value("batch_size"),
+                "learning_rate": dpg.get_value("learning_rate"),
+                "accuracy": metrics["train_acc"][-1], # TODO: Get best accuracy
+                "val_accuracy": metrics["val_acc"][-1], # TODO: Get best val accuracy
+            }
+            json.dump(metadata, f)
+        # Delete current training path
+        shutil.rmtree(self.current_training_path)
+
+        dpg.set_value("training_log", "Training finished.")
         rc = self.training_process.poll()
+        self.is_training = False
+        self.training_process = None
         return rc
 
     def validate_fields(self):
