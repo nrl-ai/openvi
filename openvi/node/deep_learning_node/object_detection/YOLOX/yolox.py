@@ -10,7 +10,7 @@ import onnxruntime
 class YOLOX(object):
     def __init__(
         self,
-        model_path="yolox_nano.onnx",
+        model_path='yolox_nano.onnx',
         class_score_th=0.0,
         nms_th=0.45,
         nms_score_th=0.1,
@@ -21,10 +21,11 @@ class YOLOX(object):
             #     'trt_engine_cache_path': '.',
             #     'trt_fp16_enable': True,
             # }),
-            "CUDAExecutionProvider",
-            "CPUExecutionProvider",
+            'CUDAExecutionProvider',
+            'CPUExecutionProvider',
         ],
     ):
+
         # 閾値
         self.class_score_th = class_score_th
         self.nms_th = nms_th
@@ -74,16 +75,13 @@ class YOLOX(object):
 
     def _preprocess(self, image, input_size, swap=(2, 0, 1)):
         if len(image.shape) == 3:
-            padded_image = (
-                np.ones((input_size[0], input_size[1], 3), dtype=np.uint8)
-                * 114
-            )
+            padded_image = np.ones(
+                (input_size[0], input_size[1], 3), dtype=np.uint8) * 114
         else:
             padded_image = np.ones(input_size, dtype=np.uint8) * 114
 
-        ratio = min(
-            input_size[0] / image.shape[0], input_size[1] / image.shape[1]
-        )
+        ratio = min(input_size[0] / image.shape[0],
+                    input_size[1] / image.shape[1])
         resized_image = cv2.resize(
             image,
             (int(image.shape[1] * ratio), int(image.shape[0] * ratio)),
@@ -91,9 +89,8 @@ class YOLOX(object):
         )
         resized_image = resized_image.astype(np.uint8)
 
-        padded_image[
-            : int(image.shape[0] * ratio), : int(image.shape[1] * ratio)
-        ] = resized_image
+        padded_image[:int(image.shape[0] * ratio), :int(image.shape[1] *
+                                                        ratio)] = resized_image
         padded_image = padded_image.transpose(swap)
         padded_image = np.ascontiguousarray(padded_image, dtype=np.float32)
 
@@ -138,10 +135,10 @@ class YOLOX(object):
         scores = predictions[:, 4:5] * predictions[:, 5:]
 
         boxes_xyxy = np.ones_like(boxes)
-        boxes_xyxy[:, 0] = boxes[:, 0] - boxes[:, 2] / 2.0
-        boxes_xyxy[:, 1] = boxes[:, 1] - boxes[:, 3] / 2.0
-        boxes_xyxy[:, 2] = boxes[:, 0] + boxes[:, 2] / 2.0
-        boxes_xyxy[:, 3] = boxes[:, 1] + boxes[:, 3] / 2.0
+        boxes_xyxy[:, 0] = boxes[:, 0] - boxes[:, 2] / 2.
+        boxes_xyxy[:, 1] = boxes[:, 1] - boxes[:, 3] / 2.
+        boxes_xyxy[:, 2] = boxes[:, 0] + boxes[:, 2] / 2.
+        boxes_xyxy[:, 3] = boxes[:, 1] + boxes[:, 3] / 2.
         boxes_xyxy /= ratio
 
         dets = self._multiclass_nms(
@@ -223,9 +220,8 @@ class YOLOX(object):
                     cls_inds = np.ones((len(keep), 1)) * cls_ind
                     dets = np.concatenate(
                         [
-                            valid_boxes[keep],
-                            valid_scores[keep, None],
-                            cls_inds,
+                            valid_boxes[keep], valid_scores[keep, None],
+                            cls_inds
                         ],
                         1,
                     )
@@ -236,9 +232,8 @@ class YOLOX(object):
 
         return np.concatenate(final_dets, 0)
 
-    def _multiclass_nms_class_agnostic(
-        self, boxes, scores, nms_thr, score_thr
-    ):
+    def _multiclass_nms_class_agnostic(self, boxes, scores, nms_thr,
+                                       score_thr):
         cls_inds = scores.argmax(1)
         cls_scores = scores[np.arange(len(cls_inds)), cls_inds]
 
@@ -254,14 +249,11 @@ class YOLOX(object):
 
         dets = None
         if keep:
-            dets = np.concatenate(
-                [
-                    valid_boxes[keep],
-                    valid_scores[keep, None],
-                    valid_cls_inds[keep, None],
-                ],
-                1,
-            )
+            dets = np.concatenate([
+                valid_boxes[keep],
+                valid_scores[keep, None],
+                valid_cls_inds[keep, None],
+            ], 1)
 
         return dets
 
@@ -278,12 +270,8 @@ class YOLOX(object):
         debug_image = copy.deepcopy(image)
 
         for bbox, score, class_id in zip(bboxes, scores, class_ids):
-            x1, y1, x2, y2 = (
-                int(bbox[0]),
-                int(bbox[1]),
-                int(bbox[2]),
-                int(bbox[3]),
-            )
+            x1, y1, x2, y2 = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(
+                bbox[3])
 
             if score_th > score:
                 continue
@@ -300,8 +288,8 @@ class YOLOX(object):
             )
 
             # クラスID、スコア
-            score = "%.2f" % score
-            text = "%s:%s" % (str(coco_classes[int(class_id)]), score)
+            score = '%.2f' % score
+            text = '%s:%s' % (str(coco_classes[int(class_id)]), score)
             debug_image = cv2.putText(
                 debug_image,
                 text,
@@ -324,16 +312,16 @@ class YOLOX(object):
         return color
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     cap = cv2.VideoCapture(0)
 
     # Load model
-    model_path = "model/yolox_nano.onnx"
+    model_path = 'model/yolox_nano.onnx'
     model = YOLOX(model_path)
 
     # Load COCO Classes List
-    with open("coco_classes.txt", "rt") as f:
-        coco_classes = f.read().rstrip("\n").split("\n")
+    with open('coco_classes.txt', 'rt') as f:
+        coco_classes = f.read().rstrip('\n').split('\n')
 
     while True:
         # Capture read
@@ -357,7 +345,7 @@ if __name__ == "__main__":
         key = cv2.waitKey(1)
         if key == 27:  # ESC
             break
-        cv2.imshow("YOLOX", frame)
+        cv2.imshow('YOLOX', frame)
 
     cap.release()
     cv2.destroyAllWindows()
