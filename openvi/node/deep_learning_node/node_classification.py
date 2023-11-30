@@ -34,21 +34,23 @@ class Node(DpgNodeABC):
 
     _opencv_setting_dict = None
 
-    # モデル設定
-    _model_class = {
+    DEFAULT_MODEL_CLASS = {
         "Resnet18": OpenCV_Classify,
     }
-    _model_base_path = (
-        os.path.dirname(os.path.abspath(__file__)) + "/classification/"
-    )
-    _model_path_setting = {
-        "Resnet18": _model_base_path
-        + "opencv/model/r18_classify/r18_classify_best_model.onnx",
+    DEFAULT_MODEL_PATH_SETTING = {
+        "Resnet18": os.path.dirname(os.path.abspath(__file__)) + "/classification/opencv/model/r18_classify/r18_classify_best_model.onnx",
     }
-    _model_class_name_dict = {
+    DEFAULT_MODEL_CLASS_NAME_DICT = {
         "Resnet18": opencv_class_names,
     }
 
+    # モデル設定
+    _model_class = copy.deepcopy(DEFAULT_MODEL_CLASS)
+    _model_base_path = (
+        os.path.dirname(os.path.abspath(__file__)) + "/classification/"
+    )
+    _model_path_setting = copy.deepcopy(DEFAULT_MODEL_PATH_SETTING)
+    _model_class_name_dict = copy.deepcopy(DEFAULT_MODEL_CLASS_NAME_DICT)
     _model_instance = {}
     _class_name_dict = None
 
@@ -68,15 +70,17 @@ class Node(DpgNodeABC):
     def load_models(self, project_path):
         if not project_path:
             return
+        if "tag_node_input02_value_name" not in dir(self):
+            return
 
         prev_selected_model_name = dpg_get_value(
             self.tag_node_input02_value_name
         )
         models_path = pathlib.Path(project_path) / "models"
         model_names = [p for p in os.listdir(models_path) if os.path.isdir(models_path / p)]
-        self._model_class = {}
-        self._model_path_setting = {}
-        self._model_class_name_dict = {}
+        self._model_class = copy.deepcopy(self.DEFAULT_MODEL_CLASS)
+        self._model_path_setting =  copy.deepcopy(self.DEFAULT_MODEL_PATH_SETTING)
+        self._model_class_name_dict =  copy.deepcopy(self.DEFAULT_MODEL_CLASS_NAME_DICT)
         for model_name in model_names:
             model_path = models_path / model_name / "model.onnx"
             if model_path.exists():
