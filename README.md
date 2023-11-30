@@ -33,6 +33,15 @@ python -m openvi.main
 ![OpenVI - Screenshot](https://github.com/openvi-team/openvi/assets/18329471/d9445a3b-3b43-4344-b633-a3f0ada9ff9e)
 
 
+## Build and Publish
+
+- Build and publish to PyPI:
+
+```bash
+python setup.py build twine
+bash build_and_publish.sh
+```
+
 ## References
 
 We used some code and media from the following sources:

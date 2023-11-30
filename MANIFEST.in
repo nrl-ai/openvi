@@ -1,4 +1,6 @@
 include openvi/font/Roboto/Roboto-Regular.ttf
 include openvi/node_editor/setting/*.json
-include openvi/node/deep_learning_node/*/*/*/*.onnx
-include openvi/node/deep_learning_node/*/*/*/*/*.onnx
+exclude openvi/node/deep_learning_node/**/*.onnx
+include openvi/node/deep_learning_node/classification/opencv/model/r18_classify/*.onnx
+include openvi/node/deep_learning_node/object_detection/YOLOX/model/yolox_nano.onnx
+exclude openvi/pi/**/*.onnx
