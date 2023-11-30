@@ -8,6 +8,8 @@ This project aims to create a toolkit for computer vision, with image processing
 
 ![OpenVI](https://github.com/openvi-team/openvi/blob/main/openvi.png)
 
+## Environment
+
 - Python 3.9
 
 ```bash
@@ -33,7 +35,7 @@ python -m openvi.main
 
 ## References
 
-We used some code from the following resources:
+We used some code and media from the following sources:
 
 - Image processing graph: [Image-Processing-Node-Editor](https://github.com/Kazuhito00/Image-Processing-Node-Editor) - License: Apache 2.0.
 - Video of <a href="https://pixabay.com/vi/users/robert_arangol-17277286/?utm_source=link-attribution&utm_medium=referral&utm_campaign=video&utm_content=46026">Robert Arango Lopez</a> from <a href="https://pixabay.com/vi//?utm_source=link-attribution&utm_medium=referral&utm_campaign=video&utm_content=46026">Pixabay</a>
