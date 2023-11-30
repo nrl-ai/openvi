@@ -58,7 +58,6 @@ class ModelTable:
             dpg.add_table_column(label="Epoch")
             dpg.add_table_column(label="Batch size")
             dpg.add_table_column(label="Learning rate")
-            dpg.add_table_column(label="Image size")
             dpg.add_table_column(label="Accuracy")
             dpg.add_table_column(label="Val Accuracy")
             for model_folder in sorted(
@@ -73,7 +72,14 @@ class ModelTable:
                     print(f"Metadata file {metadata_path} does not exist")
                     continue
                 with open(metadata_path, "r") as f:
-                    metadata = json.load(f)
+                    if not f:
+                        print(f"Metadata file {metadata_path} is empty")
+                        continue
+                    try:
+                        metadata = json.load(f)
+                    except json.JSONDecodeError:
+                        print(f"Metadata file {metadata_path} is invalid")
+                        continue
                     with dpg.table_row():
                         dpg.add_text(metadata["name"])
                         dpg.add_text(metadata.get("model_type", "Image Classification"))
@@ -81,7 +87,6 @@ class ModelTable:
                         dpg.add_text(metadata["epoch"])
                         dpg.add_text(metadata["batch_size"])
                         dpg.add_text(metadata["learning_rate"])
-                        dpg.add_text(metadata["image_size"])
                         dpg.add_text(metadata["accuracy"])
                         dpg.add_text(metadata["val_accuracy"])
 

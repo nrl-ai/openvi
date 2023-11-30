@@ -43,23 +43,19 @@ class AutoTrainer:
                 dpg.add_button(
                     label="Browse", callback=self.browse_dataset_folder
                 )
-        # Training input: Epoch, Batch size, Learning rate, Image size, Augmentation
+        # Training input
         dpg.add_text("Training")
         with dpg.group(horizontal=True):
             with dpg.group(horizontal=False):
                 dpg.add_text("Epoch")
                 dpg.add_text("Batch size")
                 dpg.add_text("Learning rate")
-                dpg.add_text("Image size")
                 dpg.add_text("Augmentation")
             with dpg.group(horizontal=False):
                 dpg.add_input_int(width=300, tag="epoch", default_value=1)
                 dpg.add_input_int(width=300, tag="batch_size", default_value=8)
                 dpg.add_input_float(
                     width=300, tag="learning_rate", default_value=0.001
-                )
-                dpg.add_input_int(
-                    width=300, tag="image_size", default_value=224
                 )
         # Training buttons
         with dpg.group(horizontal=True):
@@ -200,8 +196,6 @@ class AutoTrainer:
             "train.py" if model_type == "Image Classification" else "tools/train.py",
             "--num_classes" if model_type == "Image Classification" else "",
             str(num_classes) if model_type == "Image Classification" else "",
-            "--input_size",
-            str(dpg.get_value("image_size")),
             "--epochs",
             str(dpg.get_value("epoch")),
             "--learning_rate",
@@ -322,7 +316,6 @@ class AutoTrainer:
         epoch = dpg.get_value("epoch")
         batch_size = dpg.get_value("batch_size")
         learning_rate = dpg.get_value("learning_rate")
-        image_size = dpg.get_value("image_size")
         if dataset_folder == "":
             dpg.set_value("training_log", "Dataset folder is required.")
             return False
@@ -358,18 +351,6 @@ class AutoTrainer:
             if learning_rate < 0:
                 dpg.set_value(
                     "training_log", "Learning rate must be greater than 0."
-                )
-                return False
-        if image_size == "":
-            dpg.set_value("training_log", "Image size is required.")
-            try:
-                image_size = int(image_size)
-            except ValueError:
-                dpg.set_value("training_log", "Image size must be an integer.")
-                return False
-            if image_size < 1:
-                dpg.set_value(
-                    "training_log", "Image size must be greater than 0."
                 )
                 return False
         data_folder = dpg.get_value("dataset_folder")
