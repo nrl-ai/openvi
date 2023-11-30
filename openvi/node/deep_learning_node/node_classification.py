@@ -12,16 +12,8 @@ from openvi.node_editor.util import dpg_get_value, dpg_set_value
 from openvi.node.node_abc import DpgNodeABC
 from openvi.node_editor.util import convert_cv_to_dpg
 
-from openvi.node.deep_learning_node.classification.MobileNetV3.mobilenet_v3 import (
-    MobileNetV3,
-)
-from openvi.node.deep_learning_node.classification.EfficientNetB0.efficientnet import (
-    EfficientNetB0,
-)
-
-from openvi.node.deep_learning_node.classification.imagenet_class_names import (
-    imagenet_class_names,
-)
+from node.deep_learning_node.classification.opencv.classification import OpenCV_Classify
+from node.deep_learning_node.classification.imagenet_class_names import opencv_class_names
 
 from openvi.node.draw_node.draw_util.draw_util import (
     draw_classification_info,
@@ -39,25 +31,31 @@ class Node(DpgNodeABC):
 
     # モデル設定
     _model_class = {
-        "MobileNetV3 Small": MobileNetV3,
-        "MobileNetV3 Large": MobileNetV3,
-        "EfficientNet B0": EfficientNetB0,
+        'Resnet18':OpenCV_Classify,
+        'Resnet34':OpenCV_Classify,
+        'Resnet50':OpenCV_Classify,
+        'MobileNetV2':OpenCV_Classify,
+        'MobileNetV3 Small':OpenCV_Classify,
     }
-    _model_base_path = (
-        os.path.dirname(os.path.abspath(__file__)) + "/classification/"
-    )
+    _model_base_path = os.path.dirname(os.path.abspath(__file__)) + '/classification/'
     _model_path_setting = {
-        "MobileNetV3 Small": _model_base_path
-        + "MobileNetV3/model/MobileNetV3Small.onnx",
-        "MobileNetV3 Large": _model_base_path
-        + "MobileNetV3/model/MobileNetV3Large.onnx",
-        "EfficientNet B0": _model_base_path
-        + "EfficientNetB0/model/EfficientNetB0.onnx",
+        'Resnet18':
+        _model_base_path + 'opencv/model/r18_classify/r18_classify_best_model.onnx',
+        'Resnet34':
+        _model_base_path + 'opencv/model/r34_classify/r34_classify_best_model.onnx',
+        'Resnet50':
+        _model_base_path + 'opencv/model/r50_classify/r50_classify_best_model.onnx',
+        'MobileNetV2':
+        _model_base_path + 'opencv/model/mbv2_classify/mbv2_classify_best_model.onnx',
+        'MobileNetV3 Small':
+        _model_base_path + 'opencv/model/mbv3_classify/mbv3_classify_best_model.onnx',
     }
     _model_class_name_dict = {
-        "MobileNetV3 Small": imagenet_class_names,
-        "MobileNetV3 Large": imagenet_class_names,
-        "EfficientNet B0": imagenet_class_names,
+        'Resnet18': opencv_class_names,
+        'Resnet34': opencv_class_names,
+        'Resnet50': opencv_class_names,
+        'MobileNetV2': opencv_class_names,
+        'MobileNetV3 Small': opencv_class_names,
     }
 
     _model_instance = {}
