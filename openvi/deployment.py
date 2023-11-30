@@ -1,5 +1,5 @@
 import dearpygui.dearpygui as dpg
-from pi.test_socket_client import socket_client, check_conn
+from openvi.pi.test_socket_client import socket_client, check_conn
 from zipfile import ZipFile
 import shutil
 import os
