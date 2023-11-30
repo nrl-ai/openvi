@@ -30,7 +30,8 @@ class Tracker:
             self.past_detections_length = past_detections_length
         else:
             raise ValueError(
-                f"Argument `past_detections_length` is {past_detections_length} and should be larger than 0."
+                "Argument `past_detections_length` is"
+                f" {past_detections_length} and should be larger than 0."
             )
 
         if initialization_delay is None:
@@ -43,7 +44,10 @@ class Tracker:
             > self.hit_inertia_max - self.hit_inertia_min
         ):
             raise ValueError(
-                f"Argument 'initialization_delay' for 'Tracker' class should be an int between 0 and (hit_inertia_max - hit_inertia_min = {hit_inertia_max - hit_inertia_min}). The selected value is {initialization_delay}.\n"
+                "Argument 'initialization_delay' for 'Tracker' class should"
+                " be an int between 0 and (hit_inertia_max - hit_inertia_min"
+                f" = {hit_inertia_max - hit_inertia_min}). The selected value"
+                f" is {initialization_delay}.\n"
             )
         else:
             self.initialization_delay = initialization_delay
@@ -121,18 +125,22 @@ class Tracker:
 
             if np.isnan(distance_matrix).any():
                 print(
-                    "\nReceived nan values from distance function, please check your distance function for errors!"
+                    "\nReceived nan values from distance function, please"
+                    " check your distance function for errors!"
                 )
                 exit()
             if np.isinf(distance_matrix).any():
                 print(
-                    "\nReceived inf values from distance function, please check your distance function for errors!"
+                    "\nReceived inf values from distance function, please"
+                    " check your distance function for errors!"
                 )
                 print(
-                    "If you want to explicitly ignore a certain detection - tracked object pair, just"
+                    "If you want to explicitly ignore a certain detection -"
+                    " tracked object pair, just"
                 )
                 print(
-                    "return distance_threshold + 1 from your distance function."
+                    "return distance_threshold + 1 from your distance"
+                    " function."
                 )
                 exit()
 
@@ -235,7 +243,9 @@ class TrackedObject:
             )
         except AttributeError:
             print(
-                f"\n[red]ERROR[/red]: The detection list fed into `tracker.update()` should be composed of {Detection} objects not {type(initial_detection)}.\n"
+                "\n[red]ERROR[/red]: The detection list fed into"
+                " `tracker.update()` should be composed of"
+                f" {Detection} objects not {type(initial_detection)}.\n"
             )
             exit()
         self.num_points = initial_detection_points.shape[0]
@@ -367,9 +377,15 @@ class TrackedObject:
 
     def __repr__(self):
         if self.last_distance is None:
-            placeholder_text = "\033[1mObject_{}\033[0m(age: {}, hit_counter: {}, last_distance: {}, init_id: {})"
+            placeholder_text = (
+                "\033[1mObject_{}\033[0m(age: {}, hit_counter: {},"
+                " last_distance: {}, init_id: {})"
+            )
         else:
-            placeholder_text = "\033[1mObject_{}\033[0m(age: {}, hit_counter: {}, last_distance: {:.2f}, init_id: {})"
+            placeholder_text = (
+                "\033[1mObject_{}\033[0m(age: {}, hit_counter: {},"
+                " last_distance: {:.2f}, init_id: {})"
+            )
         return placeholder_text.format(
             self.id,
             self.age,

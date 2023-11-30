@@ -43,7 +43,10 @@ setup(
     description="No-code platform for computer vision",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    keywords="opencv, deep learning, machine learning, computer vision, image processing, video processing, video analysis, video analytics, video",
+    keywords=(
+        "opencv, deep learning, machine learning, computer vision, image"
+        " processing, video processing, video analysis, video analytics, video"
+    ),
     license="Apache-2.0 license",
     python_requires=">=3.7",
     install_requires=[
@@ -61,7 +64,7 @@ setup(
         "packaging==21.3",
         "protobuf==3.20.0",
         "sympy==1.8",
-        "dearpygui_ext==0.9.5"
+        "dearpygui_ext==0.9.5",
     ],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",

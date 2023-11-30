@@ -10,7 +10,8 @@ try:
     import cv2
 except BaseException:
     logger.error(
-        "Could not import opencv. Please install opencv-python package or some of the testing functionalities will not be available"
+        "Could not import opencv. Please install opencv-python package or some"
+        " of the testing functionalities will not be available"
     )
 """ methods below require opencv-python package installed """
 

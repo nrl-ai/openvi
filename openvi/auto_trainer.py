@@ -11,7 +11,8 @@ import dearpygui.dearpygui as dpg
 
 from openvi.utils import show_confirm, show_error
 
-class AutoTrainer():
+
+class AutoTrainer:
     def __init__(self) -> None:
         self.is_training = False
         self.training_process = None
@@ -35,8 +36,13 @@ class AutoTrainer():
                 dpg.add_text("Select dataset folder")
             with dpg.group(horizontal=False):
                 dpg.add_input_text(width=260, tag="dataset_folder")
-                dpg.set_value("dataset_folder", "/home/vietanhdev/Workspaces/openvi/image-classification/dataset/mvtec")
-                dpg.add_button(label="Browse", callback=self.browse_dataset_folder)
+                dpg.set_value(
+                    "dataset_folder",
+                    "/home/vietanhdev/Workspaces/openvi/image-classification/dataset/mvtec",
+                )
+                dpg.add_button(
+                    label="Browse", callback=self.browse_dataset_folder
+                )
         # Training input: Epoch, Batch size, Learning rate, Image size, Augmentation
         dpg.add_text("Training")
         with dpg.group(horizontal=True):
@@ -49,23 +55,53 @@ class AutoTrainer():
             with dpg.group(horizontal=False):
                 dpg.add_input_int(width=300, tag="epoch", default_value=1)
                 dpg.add_input_int(width=300, tag="batch_size", default_value=8)
-                dpg.add_input_float(width=300, tag="learning_rate", default_value=0.001)
-                dpg.add_input_int(width=300, tag="image_size", default_value=224)
+                dpg.add_input_float(
+                    width=300, tag="learning_rate", default_value=0.001
+                )
+                dpg.add_input_int(
+                    width=300, tag="image_size", default_value=224
+                )
         # Training buttons
         with dpg.group(horizontal=True):
-            dpg.add_button(label="Start Training", tag="start_stop_training", width=500, height=80, callback=self.start_training)
+            dpg.add_button(
+                label="Start Training",
+                tag="start_stop_training",
+                width=500,
+                height=80,
+                callback=self.start_training,
+            )
             dpg.add_spacer()
         # Draw accuracy chart
         dpg.add_text("Accuracy chart")
         with dpg.plot(width=500, height=200, tag="accuracy_chart"):
             dpg.add_plot_legend(tag="accuracy_chart_legend")
             dpg.add_plot_axis("x", label="Epoch", tag="accuracy_chart_x_axis")
-            dpg.add_plot_axis("y", label="Accuracy", tag="accuracy_chart_y_axis")
-            dpg.add_line_series([], [], label="Train", parent="accuracy_chart_y_axis", tag="accuracy_chart_series")
-            dpg.add_line_series([], [], label="Valid", parent="accuracy_chart_y_axis", tag="val_accuracy_chart_series")
+            dpg.add_plot_axis(
+                "y", label="Accuracy", tag="accuracy_chart_y_axis"
+            )
+            dpg.add_line_series(
+                [],
+                [],
+                label="Train",
+                parent="accuracy_chart_y_axis",
+                tag="accuracy_chart_series",
+            )
+            dpg.add_line_series(
+                [],
+                [],
+                label="Valid",
+                parent="accuracy_chart_y_axis",
+                tag="val_accuracy_chart_series",
+            )
         # Training log
         dpg.add_text("Training log")
-        dpg.add_input_text(width=500, multiline=True, height=300, tag="training_log", readonly=True)
+        dpg.add_input_text(
+            width=500,
+            multiline=True,
+            height=300,
+            tag="training_log",
+            readonly=True,
+        )
 
     def set_project_path(self, project_path):
         self.project_path = project_path
@@ -76,16 +112,16 @@ class AutoTrainer():
 
     def browse_dataset_folder(self):
         with dpg.file_dialog(
-                label="Select Dataset Folder",
-                default_path="./",
-                file_count=0,
-                directory_selector=True,
-                show=True,
-                modal=True,
-                width=500,
-                height=500,
-                callback=lambda _, user_data: self.set_dataset_folder(user_data),
-            ):
+            label="Select Dataset Folder",
+            default_path="./",
+            file_count=0,
+            directory_selector=True,
+            show=True,
+            modal=True,
+            width=500,
+            height=500,
+            callback=lambda _, user_data: self.set_dataset_folder(user_data),
+        ):
             pass
 
     def stop_training(self, sender, app_data, user_data):
@@ -99,7 +135,11 @@ class AutoTrainer():
 
     def start_training(self):
         if self.is_training:
-            show_confirm("Stop Training", "Are you sure you want to stop training?", ok_callback=self.stop_training)
+            show_confirm(
+                "Stop Training",
+                "Are you sure you want to stop training?",
+                ok_callback=self.stop_training,
+            )
             return
         if self.training_process is not None:
             show_error("Error", "Training is already running.")
@@ -107,7 +147,9 @@ class AutoTrainer():
             dpg.set_value("training_log", "Starting training...")
             dpg.set_item_label("start_stop_training", "Stop Training")
             self.is_training = True
-            self.training_thread = threading.Thread(target=self.training_process_func)
+            self.training_thread = threading.Thread(
+                target=self.training_process_func
+            )
             self.training_thread.start()
 
     def get_next_model_name(self):
@@ -127,41 +169,43 @@ class AutoTrainer():
     def training_process_func(self):
         data_folder = dpg.get_value("dataset_folder")
         num_classes = len(os.listdir(f"{data_folder}/train"))
-        self.current_training_path = pathlib.Path(self.project_path) / "training" / uuid.uuid4().hex
+        self.current_training_path = (
+            pathlib.Path(self.project_path) / "training" / uuid.uuid4().hex
+        )
         if not os.path.exists(self.current_training_path):
             self.current_training_path.mkdir(parents=True, exist_ok=True)
         command = [
-                "docker",
-                "run",
-                "-it",
-                "--shm-size=32GB",
-                "--gpus=all",
-                "-v",
-                f"{dpg.get_value('dataset_folder')}:/workspace/dataset",
-                "-v",
-                f"{self.current_training_path}:/workspace/out_snapshot",
-                "vietanhdev/openvi-image-classification:latest",
-                "python",
-                "train.py",
-                "--network",
-                "resnet18",
-                "--num_classes",
-                str(num_classes),
-                "--input_size",
-                str(dpg.get_value("image_size")),
-                "--epochs",
-                str(dpg.get_value("epoch")),
-                "--learning_rate",
-                str(dpg.get_value("learning_rate")),
-                "--batch_size",
-                str(dpg.get_value("batch_size")),
-                "--dataset",
-                "/workspace/dataset",
-                "--path_pretrain",
-                "pretrains/resnet18-5c106cde.pth",
-                "--job_name",
-                dpg.get_value("training_name"),
-            ]
+            "docker",
+            "run",
+            "-it",
+            "--shm-size=32GB",
+            "--gpus=all",
+            "-v",
+            f"{dpg.get_value('dataset_folder')}:/workspace/dataset",
+            "-v",
+            f"{self.current_training_path}:/workspace/out_snapshot",
+            "vietanhdev/openvi-image-classification:latest",
+            "python",
+            "train.py",
+            "--network",
+            "resnet18",
+            "--num_classes",
+            str(num_classes),
+            "--input_size",
+            str(dpg.get_value("image_size")),
+            "--epochs",
+            str(dpg.get_value("epoch")),
+            "--learning_rate",
+            str(dpg.get_value("learning_rate")),
+            "--batch_size",
+            str(dpg.get_value("batch_size")),
+            "--dataset",
+            "/workspace/dataset",
+            "--path_pretrain",
+            "pretrains/resnet18-5c106cde.pth",
+            "--job_name",
+            dpg.get_value("training_name"),
+        ]
         dpg.set_value("training_log", " ".join(command))
         self.training_process = subprocess.Popen(
             command,
@@ -184,15 +228,23 @@ class AutoTrainer():
             if self.last_graph_update + 1 < time.time():
                 self.last_graph_update = time.time()
                 if os.path.exists(self.current_training_path / "metrics.json"):
-                    with open(self.current_training_path / "metrics.json", "r") as f:
+                    with open(
+                        self.current_training_path / "metrics.json", "r"
+                    ) as f:
                         metrics = json.load(f)
-                        epochs = [i for i in range(1, len(metrics["train_acc"]) + 1)]
+                        epochs = [
+                            i for i in range(1, len(metrics["train_acc"]) + 1)
+                        ]
                         accuracy = metrics["train_acc"]
-                        dpg.set_value("accuracy_chart_series", [epochs, accuracy])
+                        dpg.set_value(
+                            "accuracy_chart_series", [epochs, accuracy]
+                        )
                         dpg.fit_axis_data("accuracy_chart_x_axis")
                         dpg.fit_axis_data("accuracy_chart_y_axis")
                         val_accuracy = metrics["val_acc"]
-                        dpg.set_value("val_accuracy_chart_series", [epochs, val_accuracy])
+                        dpg.set_value(
+                            "val_accuracy_chart_series", [epochs, val_accuracy]
+                        )
                         dpg.fit_axis_data("accuracy_chart_x_axis")
                         dpg.fit_axis_data("accuracy_chart_y_axis")
                 else:
@@ -210,7 +262,9 @@ class AutoTrainer():
 
         # Copy all files in current training path to model path
         for file_name in os.listdir(self.current_training_path):
-            shutil.copyfile(self.current_training_path / file_name, model_path / file_name)
+            shutil.copyfile(
+                self.current_training_path / file_name, model_path / file_name
+            )
         # Write metadata.json
         with open(model_path / "metadata.json", "w") as f:
             metadata = {
@@ -221,8 +275,12 @@ class AutoTrainer():
                 "epoch": dpg.get_value("epoch"),
                 "batch_size": dpg.get_value("batch_size"),
                 "learning_rate": dpg.get_value("learning_rate"),
-                "accuracy": metrics["train_acc"][-1], # TODO: Get best accuracy
-                "val_accuracy": metrics["val_acc"][-1], # TODO: Get best val accuracy
+                "accuracy": metrics["train_acc"][
+                    -1
+                ],  # TODO: Get best accuracy
+                "val_accuracy": metrics["val_acc"][
+                    -1
+                ],  # TODO: Get best val accuracy
             }
             json.dump(metadata, f)
         # Delete current training path
@@ -262,7 +320,9 @@ class AutoTrainer():
                 dpg.set_value("training_log", "Batch size must be an integer.")
                 return False
             if batch_size < 1:
-                dpg.set_value("training_log", "Batch size must be greater than 0.")
+                dpg.set_value(
+                    "training_log", "Batch size must be greater than 0."
+                )
                 return False
         if learning_rate == "":
             dpg.set_value("training_log", "Learning rate is required.")
@@ -272,7 +332,9 @@ class AutoTrainer():
                 dpg.set_value("training_log", "Learning rate must be a float.")
                 return False
             if learning_rate < 0:
-                dpg.set_value("training_log", "Learning rate must be greater than 0.")
+                dpg.set_value(
+                    "training_log", "Learning rate must be greater than 0."
+                )
                 return False
         if image_size == "":
             dpg.set_value("training_log", "Image size is required.")
@@ -282,7 +344,9 @@ class AutoTrainer():
                 dpg.set_value("training_log", "Image size must be an integer.")
                 return False
             if image_size < 1:
-                dpg.set_value("training_log", "Image size must be greater than 0.")
+                dpg.set_value(
+                    "training_log", "Image size must be greater than 0."
+                )
                 return False
         data_folder = dpg.get_value("dataset_folder")
         if not os.path.exists(data_folder):

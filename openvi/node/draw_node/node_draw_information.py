@@ -90,7 +90,11 @@ class Node(DpgNodeABC):
             ):
                 dpg.add_image(tag_node_output01_value_name)
                 dpg.add_text(
-                    "This node draw \nthe following information.\n- Classification\n- Object Detection\n- Semantic Segmentation\n- Pose Estimation\n- Face Detection",
+                    (
+                        "This node draw \nthe following information.\n-"
+                        " Classification\n- Object Detection\n- Semantic"
+                        " Segmentation\n- Pose Estimation\n- Face Detection"
+                    ),
                 )
 
         return tag_node_name

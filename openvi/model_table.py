@@ -4,16 +4,21 @@ import os
 
 import dearpygui.dearpygui as dpg
 
-class ModelTable():
+
+class ModelTable:
     def __init__(self) -> None:
         self.project_path = None
         self.models_path = None
 
         dpg.add_text("Trained models")
         with dpg.group(horizontal=True):
-            dpg.add_button(label="Refresh", width=200, callback=self.rescan_models)
+            dpg.add_button(
+                label="Refresh", width=200, callback=self.rescan_models
+            )
         with dpg.group(horizontal=True, tag="trained_models"):
-            with dpg.table(header_row=True, reorderable=True, tag="trained_models_table"):
+            with dpg.table(
+                header_row=True, reorderable=True, tag="trained_models_table"
+            ):
                 dpg.add_table_column(label="Training name")
                 dpg.add_table_column(label="Dataset")
                 dpg.add_table_column(label="Model")
@@ -41,7 +46,12 @@ class ModelTable():
             return
         # Clear table
         dpg.delete_item("trained_models_table")
-        with dpg.table(header_row=True, reorderable=True, tag="trained_models_table", parent="trained_models"):
+        with dpg.table(
+            header_row=True,
+            reorderable=True,
+            tag="trained_models_table",
+            parent="trained_models",
+        ):
             dpg.add_table_column(label="Name")
             dpg.add_table_column(label="Created At")
             dpg.add_table_column(label="Epoch")
@@ -50,8 +60,14 @@ class ModelTable():
             dpg.add_table_column(label="Image size")
             dpg.add_table_column(label="Accuracy")
             dpg.add_table_column(label="Val Accuracy")
-            for model_folder in sorted(os.listdir(self.models_path), reverse=True):
-                metadata_path =  pathlib.Path(self.models_path) / model_folder / "metadata.json"
+            for model_folder in sorted(
+                os.listdir(self.models_path), reverse=True
+            ):
+                metadata_path = (
+                    pathlib.Path(self.models_path)
+                    / model_folder
+                    / "metadata.json"
+                )
                 if not metadata_path.exists():
                     print(f"Metadata file {metadata_path} does not exist")
                     continue

@@ -21,7 +21,9 @@ from openvi.node.deep_learning_node.object_detection.coco_class_names_only_perso
     coco_class_names_only_person,
 )
 
-from openvi.node.draw_node.draw_util.draw_util import draw_object_detection_info
+from openvi.node.draw_node.draw_util.draw_util import (
+    draw_object_detection_info,
+)
 
 
 class Node(DpgNodeABC):

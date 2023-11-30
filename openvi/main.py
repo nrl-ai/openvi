@@ -105,18 +105,32 @@ def show_info(title, message, selection_callback=None):
         def selection_callback(sender, app_data, user_data):
             modal_id, is_ok = user_data
             dpg.configure_item(modal_id, show=False)
+
     with dpg.mutex():
         viewport_width = dpg.get_viewport_client_width()
         viewport_height = dpg.get_viewport_client_height()
         with dpg.window(label=title, modal=True, no_close=True) as modal_id:
             dpg.add_text(message)
-            dpg.add_button(label="Ok", width=75, user_data=(modal_id, True), callback=selection_callback)
+            dpg.add_button(
+                label="Ok",
+                width=75,
+                user_data=(modal_id, True),
+                callback=selection_callback,
+            )
             dpg.group(horizontal=True)
-            dpg.add_button(label="Cancel", width=75, user_data=(modal_id, False), callback=selection_callback)
+            dpg.add_button(
+                label="Cancel",
+                width=75,
+                user_data=(modal_id, False),
+                callback=selection_callback,
+            )
     dpg.split_frame()
     width = dpg.get_item_width(modal_id)
     height = dpg.get_item_height(modal_id)
-    dpg.set_item_pos(modal_id, [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2])
+    dpg.set_item_pos(
+        modal_id,
+        [viewport_width // 2 - width // 2, viewport_height // 2 - height // 2],
+    )
 
 
 def main():
@@ -157,6 +171,7 @@ def main():
     use_serial = opencv_setting_dict["use_serial"]
     if use_serial:
         import serial
+
         try:
             from .node_editor.util import check_serial_connection
         except:
@@ -255,7 +270,9 @@ def main():
             dpg.configure_item("Main Tab Bar", show=True)
             dpg.set_value("project_name", project_name)
             dpg.set_value("project_description", project_description)
-            global_data.node_editor.set_data_file(os.path.join(project_path, "nodes.json"))
+            global_data.node_editor.set_data_file(
+                os.path.join(project_path, "nodes.json")
+            )
             global_data.auto_trainer.set_project_path(project_path)
             global_data.model_table.set_project_path(project_path)
             global_data.project_path = project_path
@@ -272,7 +289,9 @@ def main():
             project_name = dpg.get_value("project_name")
             project_description = dpg.get_value("project_description")
             if not project_name or not project_description:
-                show_info("Error", "Please input project name and description.")
+                show_info(
+                    "Error", "Please input project name and description."
+                )
                 return
             # Create project directory
             if os.path.exists(os.path.join(project_path, "project.json")):
@@ -295,7 +314,9 @@ def main():
             project_name = dpg.get_value("project_name")
             project_description = dpg.get_value("project_description")
             if not project_name or not project_description:
-                show_info("Error", "Please input project name and description.")
+                show_info(
+                    "Error", "Please input project name and description."
+                )
                 return
             # Select project path
             with dpg.file_dialog(
@@ -307,7 +328,9 @@ def main():
                 modal=True,
                 width=500,
                 height=500,
-                callback=lambda _, user_data: new_project_from_path(user_data.get("file_path_name")),
+                callback=lambda _, user_data: new_project_from_path(
+                    user_data.get("file_path_name")
+                ),
             ):
                 pass
 
@@ -325,7 +348,9 @@ def main():
                 modal=True,
                 width=500,
                 height=500,
-                callback=lambda _, user_data: open_project_from_path(user_data.get("file_path_name")),
+                callback=lambda _, user_data: open_project_from_path(
+                    user_data.get("file_path_name")
+                ),
             ):
                 pass
 
@@ -345,12 +370,25 @@ def main():
                     dpg.add_text("Project Name:")
                     dpg.add_input_text(width=230, tag="project_name")
                     dpg.add_text("Description:")
-                    dpg.add_input_text(width=230, multiline=True, height=100, tag="project_description")
+                    dpg.add_input_text(
+                        width=230,
+                        multiline=True,
+                        height=100,
+                        tag="project_description",
+                    )
                 # Show project operation
                 with dpg.group(horizontal=False):
-                    dpg.add_button(label="New Project", callback=new_project, width=230)
-                    dpg.add_button(label="Open Project", callback=open_project, width=230)
-                    dpg.add_button(label="Close Project", callback=close_project, width=230)
+                    dpg.add_button(
+                        label="New Project", callback=new_project, width=230
+                    )
+                    dpg.add_button(
+                        label="Open Project", callback=open_project, width=230
+                    )
+                    dpg.add_button(
+                        label="Close Project",
+                        callback=close_project,
+                        width=230,
+                    )
 
             with dpg.child_window(autosize_y=True, tag="No Project Opened"):
                 with dpg.group(horizontal=False):

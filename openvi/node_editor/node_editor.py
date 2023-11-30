@@ -110,7 +110,7 @@ class DpgNodeEditor(object):
                     label="Save Graph",
                     callback=self._save_to_data_file,
                     user_data="Save_Graph",
-                    width=250
+                    width=250,
                 )
 
                 # Export/Importメニュー
@@ -206,7 +206,10 @@ class DpgNodeEditor(object):
                 pos=[52, 52],
             ):
                 dpg.add_text(
-                    "Sorry. In the current implementation, \nfile import works only before adding a node.",
+                    (
+                        "Sorry. In the current implementation, \nfile import"
+                        " works only before adding a node."
+                    ),
                 )
                 dpg.add_separator()
                 with dpg.group(horizontal=True):
@@ -239,7 +242,9 @@ class DpgNodeEditor(object):
 
     def _save_to_data_file(self):
         if self.data_file:
-            pathlib.Path(self.data_file).parent.mkdir(parents=True, exist_ok=True)
+            pathlib.Path(self.data_file).parent.mkdir(
+                parents=True, exist_ok=True
+            )
             data = self._get_graph_as_json()
             with open(self.data_file, "w") as f:
                 json.dump(data, f)
