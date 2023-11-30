@@ -136,3 +136,4 @@ dmypy.json
 data/
 
 /project-data
+/wheels_dist
