@@ -25,10 +25,10 @@ class AutoTrainer:
         dpg.set_value("training_name", uuid.uuid4().hex)
         dpg.add_text("Model")
         dpg.add_combo(
-            items=["Image Classification"],
+            items=["Image Classification", "Object Detection"],
             default_value="Image Classification",
             width=500,
-            tag="model",
+            tag="model_type",
         )
         dpg.add_text("Dataset")
         with dpg.group(horizontal=True):
@@ -38,7 +38,7 @@ class AutoTrainer:
                 dpg.add_input_text(width=260, tag="dataset_folder")
                 dpg.set_value(
                     "dataset_folder",
-                    "/home/vietanhdev/Workspaces/openvi/image-classification/dataset/mvtec",
+                    "./dataset",
                 )
                 dpg.add_button(
                     label="Browse", callback=self.browse_dataset_folder
@@ -126,7 +126,10 @@ class AutoTrainer:
 
     def stop_training(self, sender, app_data, user_data):
         dpg.set_value("training_log", "Stopping training...")
-        self.training_process.terminate()
+        try:
+            self.training_process.terminate()
+        except Exception:
+            pass
         self.training_process = None
         self.is_training = False
         dpg.set_value("training_log", "")
@@ -174,6 +177,14 @@ class AutoTrainer:
         )
         if not os.path.exists(self.current_training_path):
             self.current_training_path.mkdir(parents=True, exist_ok=True)
+
+        model_type = dpg.get_value("model_type")
+        docker_image = None
+        if model_type == "Image Classification":
+            docker_image = "vietanhdev/openvi-image-classification:latest"
+        elif model_type == "Object Detection":
+            docker_image = "vietanhdev/openvi-object-detection:latest"
+
         command = [
             "docker",
             "run",
@@ -184,13 +195,11 @@ class AutoTrainer:
             f"{dpg.get_value('dataset_folder')}:/workspace/dataset",
             "-v",
             f"{self.current_training_path}:/workspace/out_snapshot",
-            "vietanhdev/openvi-image-classification:latest",
+            docker_image,
             "python",
-            "train.py",
-            "--network",
-            "resnet18",
-            "--num_classes",
-            str(num_classes),
+            "train.py" if model_type == "Image Classification" else "tools/train.py",
+            "--num_classes" if model_type == "Image Classification" else "",
+            str(num_classes) if model_type == "Image Classification" else "",
             "--input_size",
             str(dpg.get_value("image_size")),
             "--epochs",
@@ -201,8 +210,6 @@ class AutoTrainer:
             str(dpg.get_value("batch_size")),
             "--dataset",
             "/workspace/dataset",
-            "--path_pretrain",
-            "pretrains/resnet18-5c106cde.pth",
             "--job_name",
             dpg.get_value("training_name"),
         ]
@@ -212,6 +219,14 @@ class AutoTrainer:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
+        metrics = {
+            "train_acc": [],
+            "train_loss": [],
+            "val_acc": [],
+            "val_loss": [],
+            "test_acc": [],
+            "test_loss": [],
+        }
         while True:
             # Check if training process is still running
             rc = self.training_process.poll()
@@ -250,6 +265,14 @@ class AutoTrainer:
                 else:
                     dpg.set_value("accuracy_chart_series", [[], []])
 
+        rc = self.training_process.poll()
+        if rc != 0:
+            dpg.set_value("training_log", dpg.get_value("training_log") + "\nTraining failed.")
+            self.is_training = False
+            self.training_process = None
+            dpg.set_item_label("start_stop_training", "Start Training")
+            return rc
+
         # Finish training
         # Copy model to models folder
         model_name = self.get_next_model_name()
@@ -268,6 +291,7 @@ class AutoTrainer:
         # Write metadata.json
         with open(model_path / "metadata.json", "w") as f:
             metadata = {
+                "model_type": model_type,
                 "created_time": time.strftime("%Y-%m-%d %H:%M:%S"),
                 "name": model_name,
                 "num_classes": num_classes,
@@ -277,17 +301,17 @@ class AutoTrainer:
                 "learning_rate": dpg.get_value("learning_rate"),
                 "accuracy": metrics["train_acc"][
                     -1
-                ],  # TODO: Get best accuracy
+                ] if len(metrics["train_acc"]) > 0 else 0, # TODO: Get the best value
                 "val_accuracy": metrics["val_acc"][
                     -1
-                ],  # TODO: Get best val accuracy
+                ] if len(metrics["val_acc"]) > 0 else 0, # TODO: Get the best value
             }
             json.dump(metadata, f)
         # Delete current training path
         shutil.rmtree(self.current_training_path)
 
         dpg.set_value("training_log", "Training finished.")
-        rc = self.training_process.poll()
+
         self.is_training = False
         self.training_process = None
         dpg.set_item_label("start_stop_training", "Start Training")

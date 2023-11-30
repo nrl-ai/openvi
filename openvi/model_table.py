@@ -53,6 +53,7 @@ class ModelTable:
             parent="trained_models",
         ):
             dpg.add_table_column(label="Name")
+            dpg.add_table_column(label="Model Type")
             dpg.add_table_column(label="Created At")
             dpg.add_table_column(label="Epoch")
             dpg.add_table_column(label="Batch size")
@@ -71,10 +72,11 @@ class ModelTable:
                 if not metadata_path.exists():
                     print(f"Metadata file {metadata_path} does not exist")
                     continue
-                with open(metadata_path) as f:
+                with open(metadata_path, "r") as f:
                     metadata = json.load(f)
                     with dpg.table_row():
                         dpg.add_text(metadata["name"])
+                        dpg.add_text(metadata.get("model_type", "Image Classification"))
                         dpg.add_text(metadata["created_time"])
                         dpg.add_text(metadata["epoch"])
                         dpg.add_text(metadata["batch_size"])
