@@ -289,7 +289,6 @@ class DpgNodeEditor(object):
 
     def _callback_link(self, sender, data):
         # 各接続子の型を取得
-        print(data)
         source_type = data[0].split(":")[2]
         destination_type = data[1].split(":")[2]
 
