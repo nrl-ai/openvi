@@ -1,0 +1,82 @@
+{
+    "node_list": [
+        "1:WebCam",
+        "3:Canny",
+        "4:Flip",
+        "8:ObjectDetection"
+    ],
+    "link_list": [
+        [
+            "1:WebCam:Image:Output01",
+            "3:Canny:Image:Input01"
+        ],
+        [
+            "1:WebCam:Image:Output01",
+            "4:Flip:Image:Input01"
+        ],
+        [
+            "4:Flip:Image:Output01",
+            "8:ObjectDetection:Image:Input01"
+        ]
+    ],
+    "1:WebCam": {
+        "id": "1",
+        "name": "WebCam",
+        "setting": {
+            "ver": "0.0.1",
+            "pos": [
+                0,
+                0
+            ]
+        }
+    },
+    "3:Canny": {
+        "id": "3",
+        "name": "Canny",
+        "setting": {
+            "ver": "0.0.1",
+            "pos": [
+                321,
+                285
+            ],
+            "3:Canny:Int:Input02Value": 100
+        }
+    },
+    "4:Flip": {
+        "id": "4",
+        "name": "Flip",
+        "setting": {
+            "ver": "0.0.1",
+            "pos": [
+                17,
+                300
+            ],
+            "4:Flip:Text:Input02Value": true,
+            "4:Flip:Text:Input03Value": false
+        }
+    },
+    "7:ResultImage": {
+        "id": "7",
+        "name": "ResultImage",
+        "setting": {
+            "ver": "0.0.1",
+            "pos": [
+                906,
+                89
+            ]
+        }
+    },
+    "8:ObjectDetection": {
+        "id": "8",
+        "name": "ObjectDetection",
+        "setting": {
+            "ver": "0.0.1",
+            "pos": [
+                630,
+                101
+            ],
+            "8:ObjectDetection:Text:Input02Value": "NanoDet-Plus-m (416x416)",
+            "8:ObjectDetection:Float:Input03Value": 0.3
+        }
+    }
+}

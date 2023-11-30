@@ -4,16 +4,19 @@ import argparse
 
 
 def check_conn(host='127.0.0.1', port=12345):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    logs = []
+    sock = socket.socket()
     result = sock.connect_ex((host, port))
     if result == 0:
         print ("Port is open")
+        logs.append("Port is open")
         sock.close()
-        return True
+        return True, logs
     else:
         print ("Port is not open")
+        logs.append("Port is not open")
         sock.close()
-        return False
+        return False, logs
 
 
 def socket_client(host, port, zip_path):
@@ -21,19 +24,24 @@ def socket_client(host, port, zip_path):
     # host = socket.gethostname() # Get local machine name
     # host = '172.20.10.3
     # port = 12345                 # Reserve a port for your service.
+    logs = []
 
     s.connect((host, port))
     f = open(zip_path,'rb')
     print ('Sending...')
+    logs.append("Sending ...")
     l = f.read(1024)
     while (l):
         print ('Sending...')
+        logs.append("Sending ...")
         s.send(l)
         l = f.read(1024)
     f.close()
     print ("Done Sending")
-    # print (s.recv(1024))
+    logs.append("Done Sending")
+
     s.close                     # Close the socket when done
+    return logs
 
 
 if __name__ == "__main__":

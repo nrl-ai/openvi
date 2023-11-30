@@ -22,16 +22,16 @@ def deep_learning(image, method_name, params):
             net = nanodet_416.my_nanodet(input_shape=416, prob_threshold=0.5, iou_threshold=0.6)
             res_image = net.detect(image)
 
-            winName = 'Deep learning object detection in OpenCV'
-            cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
-            cv2.imshow(winName, res_image)
+            # winName = 'Deep learning object detection in OpenCV'
+            # cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+            # cv2.imshow(winName, res_image)
         elif (model_name == 'NanoDet-Plus-m (320x320)'):
             net = nanodet_320.my_nanodet(input_shape=320, prob_threshold=0.5, iou_threshold=0.6)
             res_image = net.detect(image)
 
-            winName = 'Deep learning object detection in OpenCV'
-            cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
-            cv2.imshow(winName, res_image)
+            # winName = 'Deep learning object detection in OpenCV'
+            # cv2.namedWindow(winName, cv2.WINDOW_NORMAL)
+            # cv2.imshow(winName, res_image)
         else:
             res_image = None
 

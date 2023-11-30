@@ -16,8 +16,10 @@ while True:
     with c:
         f = open(zip_name,'wb')
         print ('Got connection from', addr)
-        print ("Receiving...")
         l = c.recv(1024)
+        if (l==b''):
+            print ("Receive test connection signal!")
+            continue
         while (l):
             print ("Receiving...")
             f.write(l)
