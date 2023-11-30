@@ -6,7 +6,7 @@ This project aims to create a toolkit for computer vision, with image processing
 - Training machine learning models for object detection, image classification, and other computer vision tasks.
 - Deploy machine learning models to devices.
 
-![OpenVI](openvi.png)
+![OpenVI](https://github.com/openvi-team/openvi/blob/main/openvi.png)
 
 - Python 3.9
 
@@ -21,6 +21,15 @@ pip install -e .
 ```bash
 python -m openvi.main
 ```
+
+[OpenVI - Screencast](https://github.com/openvi-team/openvi/assets/18329471/db9047e2-3b0b-4052-bdb2-ea550d481921)
+
+![OpenVI - Screenshot](https://github.com/openvi-team/openvi/assets/18329471/96b6711b-e85f-4429-909b-e80cefaabef1)
+
+![OpenVI - Screenshot](https://github.com/openvi-team/openvi/assets/18329471/5f3a4008-ab71-44d4-9f0f-1a62e0c6cfc7)
+
+![OpenVI - Screenshot](https://github.com/openvi-team/openvi/assets/18329471/d9445a3b-3b43-4344-b633-a3f0ada9ff9e)
+
 
 ## References
 
