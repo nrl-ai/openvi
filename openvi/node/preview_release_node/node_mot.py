@@ -15,9 +15,13 @@ from openvi.node.preview_release_node.mot.motpy.motpy import Motpy
 from openvi.node.preview_release_node.mot.bytetrack.mc_bytetrack import (
     MultiClassByteTrack,
 )
-from openvi.node.preview_release_node.mot.norfair.mc_norfair import MultiClassNorfair
+from openvi.node.preview_release_node.mot.norfair.mc_norfair import (
+    MultiClassNorfair,
+)
 
-from openvi.node.draw_node.draw_util.draw_util import draw_multi_object_tracking_info
+from openvi.node.draw_node.draw_util.draw_util import (
+    draw_multi_object_tracking_info,
+)
 
 
 class Node(DpgNodeABC):

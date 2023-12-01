@@ -3,22 +3,27 @@
 import copy
 import time
 import os
+import pathlib
+import threading
+import time
 
 import numpy as np
 import dearpygui.dearpygui as dpg
 
 from openvi.node_editor.util import dpg_get_value, dpg_set_value
-
 from openvi.node.node_abc import DpgNodeABC
 from openvi.node_editor.util import convert_cv_to_dpg
-
-from node.deep_learning_node.classification.opencv.classification import OpenCV_Classify
-from node.deep_learning_node.classification.imagenet_class_names import opencv_class_names
-
+from openvi.node.deep_learning_node.classification.opencv.classification import (
+    OpenCV_Classify,
+)
+from openvi.node.deep_learning_node.classification.imagenet_class_names import (
+    opencv_class_names,
+)
 from openvi.node.draw_node.draw_util.draw_util import (
     draw_classification_info,
     draw_classification_with_od_info,
 )
+from openvi import global_data
 
 
 class Node(DpgNodeABC):
@@ -29,40 +34,74 @@ class Node(DpgNodeABC):
 
     _opencv_setting_dict = None
 
-    # モデル設定
-    _model_class = {
-        'Resnet18':OpenCV_Classify,
-        'Resnet34':OpenCV_Classify,
-        'Resnet50':OpenCV_Classify,
-        'MobileNetV2':OpenCV_Classify,
-        'MobileNetV3 Small':OpenCV_Classify,
+    DEFAULT_MODEL_CLASS = {
+        "Resnet18": OpenCV_Classify,
     }
-    _model_base_path = os.path.dirname(os.path.abspath(__file__)) + '/classification/'
-    _model_path_setting = {
-        'Resnet18':
-        _model_base_path + 'opencv/model/r18_classify/r18_classify_best_model.onnx',
-        'Resnet34':
-        _model_base_path + 'opencv/model/r34_classify/r34_classify_best_model.onnx',
-        'Resnet50':
-        _model_base_path + 'opencv/model/r50_classify/r50_classify_best_model.onnx',
-        'MobileNetV2':
-        _model_base_path + 'opencv/model/mbv2_classify/mbv2_classify_best_model.onnx',
-        'MobileNetV3 Small':
-        _model_base_path + 'opencv/model/mbv3_classify/mbv3_classify_best_model.onnx',
+    DEFAULT_MODEL_PATH_SETTING = {
+        "Resnet18": os.path.dirname(os.path.abspath(__file__)) + "/classification/opencv/model/r18_classify/r18_classify_best_model.onnx",
     }
-    _model_class_name_dict = {
-        'Resnet18': opencv_class_names,
-        'Resnet34': opencv_class_names,
-        'Resnet50': opencv_class_names,
-        'MobileNetV2': opencv_class_names,
-        'MobileNetV3 Small': opencv_class_names,
+    DEFAULT_MODEL_CLASS_NAME_DICT = {
+        "Resnet18": opencv_class_names,
     }
 
+    # モデル設定
+    _model_class = copy.deepcopy(DEFAULT_MODEL_CLASS)
+    _model_base_path = (
+        os.path.dirname(os.path.abspath(__file__)) + "/classification/"
+    )
+    _model_path_setting = copy.deepcopy(DEFAULT_MODEL_PATH_SETTING)
+    _model_class_name_dict = copy.deepcopy(DEFAULT_MODEL_CLASS_NAME_DICT)
     _model_instance = {}
     _class_name_dict = None
 
     def __init__(self):
-        pass
+        # Read from project directory
+        if global_data.project_path:
+            self.load_models(global_data.project_path)
+        self._thread = threading.Thread(target=self.reload_thread)
+        self._thread.start()
+
+    def reload_thread(self):
+        while True:
+            time.sleep(5)
+            if global_data.project_path:
+                self.load_models(global_data.project_path)
+
+    def load_models(self, project_path):
+        if not project_path:
+            return
+        if "tag_node_input02_value_name" not in dir(self):
+            return
+
+        prev_selected_model_name = dpg_get_value(
+            self.tag_node_input02_value_name
+        )
+        models_path = pathlib.Path(project_path) / "models"
+        model_names = [p for p in os.listdir(models_path) if os.path.isdir(models_path / p)]
+        self._model_class = copy.deepcopy(self.DEFAULT_MODEL_CLASS)
+        self._model_path_setting =  copy.deepcopy(self.DEFAULT_MODEL_PATH_SETTING)
+        self._model_class_name_dict =  copy.deepcopy(self.DEFAULT_MODEL_CLASS_NAME_DICT)
+        for model_name in model_names:
+            model_path = models_path / model_name / "model.onnx"
+            if model_path.exists():
+                self._model_class[model_name] = OpenCV_Classify
+                self._model_path_setting[model_name] = str(model_path)
+                self._model_class_name_dict[model_name] = opencv_class_names
+
+        # Update combo tag_node_input02_name
+        # Clear combo
+        dpg.delete_item(self.tag_node_input02_value_name)
+        dpg.add_combo(
+            list(self._model_class.keys()),
+            width=200,
+            tag=self.tag_node_input02_value_name,
+            parent=self.tag_node_input02_name,
+        )
+
+        if prev_selected_model_name in self._model_class:
+            dpg_set_value(self.tag_node_input02_value_name, prev_selected_model_name)
+        elif len(self._model_class) > 0:
+            dpg_set_value(self.tag_node_input02_value_name, list(self._model_class.keys())[0])
 
     def add_node(
         self,
@@ -83,9 +122,11 @@ class Node(DpgNodeABC):
         tag_node_input02_name = (
             tag_node_name + ":" + self.TYPE_TEXT + ":Input02"
         )
+        self.tag_node_input02_name = tag_node_input02_name
         tag_node_input02_value_name = (
             tag_node_name + ":" + self.TYPE_TEXT + ":Input02Value"
         )
+        self.tag_node_input02_value_name = tag_node_input02_value_name
         tag_node_output01_name = (
             tag_node_name + ":" + self.TYPE_IMAGE + ":Output01"
         )
@@ -138,7 +179,7 @@ class Node(DpgNodeABC):
             label=self.node_label,
             pos=pos,
         ):
-            # 入力端子
+            # 入力端子load_models
             with dpg.node_attribute(
                 tag=tag_node_input01_name,
                 attribute_type=dpg.mvNode_Attr_Input,
@@ -153,6 +194,7 @@ class Node(DpgNodeABC):
                 attribute_type=dpg.mvNode_Attr_Output,
             ):
                 dpg.add_image(tag_node_output01_value_name)
+
             # 使用アルゴリズム
             with dpg.node_attribute(
                 tag=tag_node_input02_name,
@@ -164,6 +206,7 @@ class Node(DpgNodeABC):
                     width=small_window_w,
                     tag=tag_node_input02_value_name,
                 )
+
             if use_gpu:
                 # CPU/GPU切り替え
                 with dpg.node_attribute(

@@ -42,11 +42,14 @@ class Video:
             input_path is not None and camera is not None
         ):
             raise ValueError(
-                "You must set either 'camera' or 'input_path' arguments when setting 'Video' class"
+                "You must set either 'camera' or 'input_path' arguments when"
+                " setting 'Video' class"
             )
         if camera is not None and type(camera) is not int:
             raise ValueError(
-                "Argument 'camera' refers to the device-id of your camera, and must be an int. Setting it to 0 usually works if you don't know the id."
+                "Argument 'camera' refers to the device-id of your camera, and"
+                " must be an int. Setting it to 0 usually works if you don't"
+                " know the id."
             )
 
         # Read Input Video
@@ -55,7 +58,8 @@ class Video:
                 self.input_path = os.path.expanduser(self.input_path)
             if not os.path.isfile(self.input_path):
                 self._fail(
-                    f"[bold red]Error:[/bold red] File '{self.input_path}' does not exist."
+                    f"[bold red]Error:[/bold red] File '{self.input_path}'"
+                    " does not exist."
                 )
             self.video_capture = cv2.VideoCapture(self.input_path)
             total_frames = int(
@@ -63,7 +67,10 @@ class Video:
             )
             if total_frames == 0:
                 self._fail(
-                    f"[bold red]Error:[/bold red] '{self.input_path}' does not seem to be a video file supported by OpenCV. If the video file is not the problem, please check that your OpenCV installation is working correctly."
+                    f"[bold red]Error:[/bold red] '{self.input_path}' does not"
+                    " seem to be a video file supported by OpenCV. If the"
+                    " video file is not the problem, please check that your"
+                    " OpenCV installation is working correctly."
                 )
             description = os.path.basename(self.input_path)
         else:
@@ -129,7 +136,8 @@ class Video:
         if self.output_video is not None:
             self.output_video.release()
             print(
-                f"[white]Output video file saved to: {self.get_output_file_path()}[/white]"
+                "[white]Output video file saved to:"
+                f" {self.get_output_file_path()}[/white]"
             )
         self.video_capture.release()
         cv2.destroyAllWindows()
@@ -197,9 +205,10 @@ class Video:
             return "mp4v"  # When available, "avc1" is better
         else:
             self._fail(
-                f"[bold red]Could not determine video codec for the provided output filename[/bold red]: "
-                f"[yellow]{filename}[/yellow]\n"
-                f"Please use '.mp4', '.avi', or provide a custom OpenCV fourcc codec name."
+                "[bold red]Could not determine video codec for the provided"
+                " output filename[/bold red]:"
+                f" [yellow]{filename}[/yellow]\nPlease use '.mp4', '.avi', or"
+                " provide a custom OpenCV fourcc codec name."
             )
             return None  # Had to add this return to make mypya happy. I don't like this.
 

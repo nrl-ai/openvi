@@ -154,7 +154,10 @@ class Node(DpgNodeABC):
                 dpg.add_input_text(
                     tag=tag_node_input02_value_name,
                     multiline=True,
-                    default_value="output_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)",
+                    default_value=(
+                        "output_image = cv2.cvtColor(input_image,"
+                        " cv2.COLOR_BGR2GRAY)"
+                    ),
                     width=small_window_w,
                     height=int((small_window_h / 3) * 2),
                     tab_input=True,

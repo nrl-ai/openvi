@@ -171,7 +171,10 @@ class SingleObjectTracker:
         return self.staleness >= self.max_staleness
 
     def __repr__(self) -> str:
-        return f"(box: {str(self.box())}, score: {self.score}, class_id: {self.class_id}, staleness: {self.staleness:.2f})"
+        return (
+            f"(box: {str(self.box())}, score: {self.score}, class_id:"
+            f" {self.class_id}, staleness: {self.staleness:.2f})"
+        )
 
 
 class KalmanTracker(SingleObjectTracker):
@@ -414,7 +417,8 @@ class MultiObjectTracker:
             raise NotImplementedError(f"unsupported motion model {model_spec}")
 
         logger.debug(
-            f"using single tracker of class: {self.tracker_clss} with kwargs: {self.tracker_kwargs}"
+            f"using single tracker of class: {self.tracker_clss} with kwargs:"
+            f" {self.tracker_kwargs}"
         )
 
         self.matching_fn: BaseMatchingFunction = matching_fn

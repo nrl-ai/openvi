@@ -13,7 +13,9 @@ from openvi.node_editor.util import dpg_get_value, dpg_set_value
 from openvi.node.node_abc import DpgNodeABC
 from openvi.node_editor.util import convert_cv_to_dpg
 
-from openvi.node.draw_node.draw_util.draw_util import draw_qrcode_detection_info
+from openvi.node.draw_node.draw_util.draw_util import (
+    draw_qrcode_detection_info,
+)
 
 
 class Node(DpgNodeABC):
